@@ -1,0 +1,478 @@
+import React, { useState, useEffect } from 'react';
+import { Calendar, MapPin, Filter, Heart, User, Plus, ExternalLink, Search } from 'lucide-react';
+
+const EventsCalendar = () => {
+  const [user, setUser] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(0);
+  const [filters, setFilters] = useState({
+    location: 'all',
+    eventType: 'all',
+    favorites: false
+  });
+  const [favorites, setFavorites] = useState(new Set());
+  const [showAddEvent, setShowAddEvent] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Color coding for locations
+  const locationColors = {
+    'Manhattan': 'bg-blue-100 border-blue-300 text-blue-800',
+    'Brooklyn': 'bg-green-100 border-green-300 text-green-800',
+    'Queens': 'bg-purple-100 border-purple-300 text-purple-800',
+    'Asbury Park': 'bg-orange-100 border-orange-300 text-orange-800'
+  };
+
+  // Sample events with real-world structure
+  const [events, setEvents] = useState([
+    {
+      id: 1,
+      title: "Brooklyn Bridge Park Free Summer Concert",
+      location: "Brooklyn",
+      type: "Music",
+      date: "2025-06-28",
+      time: "7:00 PM",
+      description: "Free outdoor concert featuring local NYC artists",
+      website: "https://www.brooklynbridgepark.org/events",
+      source: "Brooklyn Bridge Park Conservancy",
+      week: 0
+    },
+    {
+      id: 2,
+      title: "Queens Night Market",
+      location: "Queens",
+      type: "Food & Culture",
+      date: "2025-06-28",
+      time: "6:00 PM - 12:00 AM",
+      description: "Weekly night market featuring food vendors and cultural performances",
+      website: "https://queensnightmarket.com",
+      source: "Queens Night Market Official",
+      week: 0
+    },
+    {
+      id: 3,
+      title: "Central Park SummerStage",
+      location: "Manhattan",
+      type: "Music",
+      date: "2025-06-29",
+      time: "8:00 PM",
+      description: "Free outdoor concert series in Central Park",
+      website: "https://summerstage.org",
+      source: "City Parks Foundation",
+      week: 0
+    },
+    {
+      id: 4,
+      title: "Asbury Park Beach Concert",
+      location: "Asbury Park",
+      type: "Music",
+      date: "2025-06-29",
+      time: "6:30 PM",
+      description: "Free beach concert with local bands",
+      website: "https://www.asburyparknj.gov/events",
+      source: "City of Asbury Park",
+      week: 0
+    },
+    {
+      id: 5,
+      title: "Brooklyn Museum Free Saturday",
+      location: "Brooklyn",
+      type: "Arts & Culture",
+      date: "2025-07-05",
+      time: "11:00 AM - 6:00 PM",
+      description: "Free admission to Brooklyn Museum on first Saturday",
+      website: "https://www.brooklynmuseum.org",
+      source: "Brooklyn Museum",
+      week: 1
+    },
+    {
+      id: 6,
+      title: "Flushing Meadows Cultural Festival",
+      location: "Queens",
+      type: "Cultural",
+      date: "2025-07-06",
+      time: "12:00 PM - 8:00 PM",
+      description: "Multicultural celebration with food, music, and art",
+      website: "https://www.nycgovparks.org/parks/flushing-meadows-corona-park",
+      source: "NYC Parks Department",
+      week: 1
+    },
+    {
+      id: 7,
+      title: "High Line Art Installation Opening",
+      location: "Manhattan",
+      type: "Arts & Culture",
+      date: "2025-07-12",
+      time: "2:00 PM",
+      description: "Free guided tour of new art installation",
+      website: "https://www.thehighline.org",
+      source: "Friends of the High Line",
+      week: 2
+    },
+    {
+      id: 8,
+      title: "Asbury Park Maker Fair",
+      location: "Asbury Park",
+      type: "Community",
+      date: "2025-07-13",
+      time: "10:00 AM - 4:00 PM",
+      description: "Local artisans and makers showcase",
+      website: "https://www.asburyparkmakerfair.com",
+      source: "Asbury Park Community Events",
+      week: 2
+    }
+  ]);
+
+  const weeks = [
+    { label: "This Week", dates: "June 25 - July 1, 2025" },
+    { label: "Next Week", dates: "July 2 - July 8, 2025" },
+    { label: "Following Week", dates: "July 9 - July 15, 2025" }
+  ];
+
+  const eventTypes = ['Music', 'Arts & Culture', 'Food & Culture', 'Cultural', 'Community'];
+  const locations = ['Manhattan', 'Brooklyn', 'Queens', 'Asbury Park'];
+
+  const filteredEvents = events.filter(event => {
+    if (event.week !== selectedWeek) return false;
+    if (filters.location !== 'all' && event.location !== filters.location) return false;
+    if (filters.eventType !== 'all' && event.type !== filters.eventType) return false;
+    if (filters.favorites && !favorites.has(event.id)) return false;
+    if (searchTerm && !event.title.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        !event.description.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    return true;
+  });
+
+  const toggleFavorite = (eventId) => {
+    if (!user) {
+      alert('Please sign in to save favorites');
+      return;
+    }
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(eventId)) {
+      newFavorites.delete(eventId);
+    } else {
+      newFavorites.add(eventId);
+    }
+    setFavorites(newFavorites);
+  };
+
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    location: '',
+    type: '',
+    date: '',
+    time: '',
+    description: '',
+    website: ''
+  });
+
+  const addEvent = () => {
+    if (!newEvent.title || !newEvent.location || !newEvent.type || !newEvent.date || !newEvent.time || !newEvent.description || !newEvent.website) {
+      alert('Please fill in all fields');
+      return;
+    }
+    const event = {
+      ...newEvent,
+      id: events.length + 1,
+      week: selectedWeek,
+      source: user ? `Added by ${user}` : 'Community Submission'
+    };
+    setEvents([...events, event]);
+    setNewEvent({
+      title: '',
+      location: '',
+      type: '',
+      date: '',
+      time: '',
+      description: '',
+      website: ''
+    });
+    setShowAddEvent(false);
+  };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+          <div className="text-center mb-6">
+            <Calendar className="mx-auto h-12 w-12 text-blue-600 mb-4" />
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">NYC Metro Events</h1>
+            <p className="text-gray-600">Discover free events across NYC & Asbury Park</p>
+          </div>
+          
+          <div className="space-y-4">
+            <button
+              onClick={() => setUser('Demo User')}
+              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Sign In to Access Features
+            </button>
+            <div className="text-center text-sm text-gray-500">
+              Sign in to save favorites, add events, and customize your experience
+            </div>
+          </div>
+
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+            <h3 className="font-semibold text-gray-900 mb-2">Preview: This Week's Events</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center text-blue-600">
+                <MapPin className="h-3 w-3 mr-1" />
+                Brooklyn Bridge Park Concert
+              </div>
+              <div className="flex items-center text-purple-600">
+                <MapPin className="h-3 w-3 mr-1" />
+                Queens Night Market
+              </div>
+              <div className="flex items-center text-green-600">
+                <MapPin className="h-3 w-3 mr-1" />
+                Central Park SummerStage
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Calendar className="h-8 w-8 text-blue-600" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">NYC Metro Events</h1>
+                <p className="text-sm text-gray-600">Free events across NYC & Asbury Park</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowAddEvent(true)}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Event</span>
+              </button>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <User className="h-5 w-5" />
+                <span>{user}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Week Selector */}
+        <div className="mb-6">
+          <div className="flex space-x-2">
+            {weeks.map((week, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedWeek(index)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  selectedWeek === index
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <div className="text-sm font-semibold">{week.label}</div>
+                <div className="text-xs opacity-75">{week.dates}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex-1 min-w-64">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search events..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            
+            <select
+              value={filters.location}
+              onChange={(e) => setFilters({...filters, location: e.target.value})}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Locations</option>
+              {locations.map(loc => (
+                <option key={loc} value={loc}>{loc}</option>
+              ))}
+            </select>
+
+            <select
+              value={filters.eventType}
+              onChange={(e) => setFilters({...filters, eventType: e.target.value})}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Types</option>
+              {eventTypes.map(type => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+
+            <button
+              onClick={() => setFilters({...filters, favorites: !filters.favorites})}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                filters.favorites
+                  ? 'bg-red-100 text-red-700 border border-red-300'
+                  : 'bg-gray-100 text-gray-600 border border-gray-300'
+              }`}
+            >
+              <Heart className={`h-4 w-4 ${filters.favorites ? 'fill-current' : ''}`} />
+              <span>Favorites</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Events Grid */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredEvents.map((event) => (
+            <div key={event.id} className={`bg-white rounded-lg shadow-sm border-l-4 p-6 ${locationColors[event.location]}`}>
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center space-x-2">
+                  <MapPin className="h-4 w-4" />
+                  <span className="text-sm font-medium">{event.location}</span>
+                </div>
+                <button
+                  onClick={() => toggleFavorite(event.id)}
+                  className="p-1 hover:bg-gray-100 rounded"
+                >
+                  <Heart className={`h-4 w-4 ${favorites.has(event.id) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                </button>
+              </div>
+
+              <h3 className="font-semibold text-gray-900 mb-2">{event.title}</h3>
+              <p className="text-sm text-gray-600 mb-3">{event.description}</p>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center text-gray-700">
+                  <Calendar className="h-3 w-3 mr-2" />
+                  {new Date(event.date).toLocaleDateString()} at {event.time}
+                </div>
+                <div className="text-gray-500">
+                  Source: {event.source}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <span className="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                  {event.type}
+                </span>
+                <a
+                  href={event.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                >
+                  <span>Visit Site</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredEvents.length === 0 && (
+          <div className="text-center py-12">
+            <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+            <p className="text-gray-600">Try adjusting your filters or search terms</p>
+          </div>
+        )}
+      </div>
+
+      {/* Add Event Modal */}
+      {showAddEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-4">Add Event Update</h3>
+            <div>
+              <div className="space-y-4">
+                <input
+                  placeholder="Event Title"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <select
+                  value={newEvent.location}
+                  onChange={(e) => setNewEvent({...newEvent, location: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Location</option>
+                  {locations.map(loc => (
+                    <option key={loc} value={loc}>{loc}</option>
+                  ))}
+                </select>
+                <select
+                  value={newEvent.type}
+                  onChange={(e) => setNewEvent({...newEvent, type: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Type</option>
+                  {eventTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+                <input
+                  type="date"
+                  value={newEvent.date}
+                  onChange={(e) => setNewEvent({...newEvent, date: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  placeholder="Event Time"
+                  value={newEvent.time}
+                  onChange={(e) => setNewEvent({...newEvent, time: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <textarea
+                  placeholder="Event Description"
+                  rows="3"
+                  value={newEvent.description}
+                  onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                ></textarea>
+                <input
+                  type="url"
+                  placeholder="Official Website URL"
+                  value={newEvent.website}
+                  onChange={(e) => setNewEvent({...newEvent, website: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex space-x-3 mt-6">
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Add Event
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAddEvent(false)}
+                  className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EventsCalendar;
