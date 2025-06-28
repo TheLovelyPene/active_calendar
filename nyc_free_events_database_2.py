@@ -699,7 +699,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         week_label = f"Week of {nav_week_start.strftime('%B %d')}, {nav_week_start.year}"
         
         week_id = f"week-{i}"
-        html_content += f'<a onclick="showWeek(\'{week_id}\')">{week_label}</a>'
+        
+        # Add 'active' class to the first navigation link
+        active_class = " active" if i == 0 else ""
+        
+        html_content += f'<a onclick="showWeek(\'{week_id}\')" class="{active_class}">{week_label}</a>'
 
     html_content += """
             </div>
@@ -716,8 +720,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         
         week_id = f"week-{i}"
 
+        # Add 'active' class to the first week
+        active_class = " active" if i == 0 else ""
+
         html_content += f"""
-            <div id="{week_id}" class="week-section">
+            <div id="{week_id}" class="week-section{active_class}">
                 <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">{week_label}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         """
