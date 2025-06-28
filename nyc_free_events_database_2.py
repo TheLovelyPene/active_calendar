@@ -1731,7 +1731,7 @@ def create_calendar_grid(week_events, week_start):
                 time_short = event['time'].split('–')[0].strip() if '–' in event['time'] else event['time'][:8]
                 
                 calendar_html += f'''
-                    <div class="day-event {borough_class}" onclick="showEventDetails('{event['name']}', '{event['date']}', '{event['time']}', '{event['address']}', '{event['borough']}', '{event['address']}')">
+                    <div class="day-event {borough_class}" onclick="showEventDetails('{event['name']}', '{event['date']}', '{event['time']}', '{event['address']}', '{event['borough']}', 'Free event in {event['borough']}')">
                         <div class="day-event-name">{event_name_short}</div>
                         <div class="day-event-time">{time_short}</div>
                         <div class="day-event-borough {borough_class}">{event['borough'][:3]}</div>
