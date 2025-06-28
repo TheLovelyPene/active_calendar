@@ -506,6 +506,320 @@ const nycEvents = [
     address: "Asbury Park Convention Hall, Asbury Park, NJ",
     borough: "Asbury Park, NJ",
     link: "https://www.njfamily.com/events/asbury-park-spring-bazaar-2025/2025-07-17/"
+  },
+
+  // NYC Parks Events (Official NYC Parks Programming)
+  {
+    name: "Summer on the Hudson: Concert Series",
+    date: "2025-07-02",
+    time: "6:00 PM - 8:00 PM",
+    address: "Riverside Park, 103rd Street, New York, NY 10025",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Summer on the Hudson: Movies Under the Stars",
+    date: "2025-07-05",
+    time: "8:00 PM - 10:00 PM",
+    address: "Riverside Park, 91st Street, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Summer on the Hudson: Jazz Performance",
+    date: "2025-07-09",
+    time: "6:00 PM - 8:00 PM",
+    address: "Riverside Park, 79th Street, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Summer on the Hudson: Family Dance Party",
+    date: "2025-07-16",
+    time: "6:00 PM - 8:00 PM",
+    address: "Riverside Park, 103rd Street, New York, NY 10025",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Summer on the Hudson: World Music Night",
+    date: "2025-07-23",
+    time: "6:00 PM - 8:00 PM",
+    address: "Riverside Park, 96th Street, New York, NY 10025",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Summer on the Hudson: Kids Show",
+    date: "2025-07-30",
+    time: "6:00 PM - 7:00 PM",
+    address: "Riverside Park, 91st Street, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/summer_on_the_hudson"
+  },
+  {
+    name: "Movies Under the Stars - Central Park",
+    date: "2025-07-07",
+    time: "8:00 PM - 10:00 PM",
+    address: "Central Park Great Lawn, 79th St Transverse, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_movies"
+  },
+  {
+    name: "Movies Under the Stars - Bryant Park",
+    date: "2025-07-14",
+    time: "8:00 PM - 10:00 PM",
+    address: "Bryant Park, 1065 Avenue of the Americas, New York, NY 10018",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_movies"
+  },
+  {
+    name: "Shakespeare in the Park: Romeo & Juliet",
+    date: "2025-07-01",
+    time: "8:00 PM - 10:30 PM",
+    address: "Delacorte Theater, Central Park, 81st St & Central Park West, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_theater"
+  },
+  {
+    name: "Shakespeare in the Park: Romeo & Juliet",
+    date: "2025-07-08",
+    time: "8:00 PM - 10:30 PM",
+    address: "Delacorte Theater, Central Park, 81st St & Central Park West, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_theater"
+  },
+  {
+    name: "Shakespeare in the Park: Romeo & Juliet",
+    date: "2025-07-15",
+    time: "8:00 PM - 10:30 PM",
+    address: "Delacorte Theater, Central Park, 81st St & Central Park West, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_theater"
+  },
+  {
+    name: "Shakespeare in the Park: Romeo & Juliet",
+    date: "2025-07-22",
+    time: "8:00 PM - 10:30 PM",
+    address: "Delacorte Theater, Central Park, 81st St & Central Park West, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_theater"
+  },
+  {
+    name: "Shakespeare in the Park: Romeo & Juliet",
+    date: "2025-07-29",
+    time: "8:00 PM - 10:30 PM",
+    address: "Delacorte Theater, Central Park, 81st St & Central Park West, New York, NY 10024",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events/free_summer_theater"
+  },
+  {
+    name: "Bryant Park Picnic Performances",
+    date: "2025-07-04",
+    time: "12:00 PM - 2:00 PM",
+    address: "Bryant Park, 1065 Avenue of the Americas, New York, NY 10018",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Bryant Park Yoga",
+    date: "2025-07-11",
+    time: "10:00 AM - 11:00 AM",
+    address: "Bryant Park, 1065 Avenue of the Americas, New York, NY 10018",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Bryant Park Chess Tournament",
+    date: "2025-07-18",
+    time: "6:00 PM - 8:00 PM",
+    address: "Bryant Park, 1065 Avenue of the Americas, New York, NY 10018",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Bryant Park Reading Room",
+    date: "2025-07-25",
+    time: "11:00 AM - 7:00 PM",
+    address: "Bryant Park, 1065 Avenue of the Americas, New York, NY 10018",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Governors Island Art Fair",
+    date: "2025-07-12",
+    time: "11:00 AM - 6:00 PM",
+    address: "Governors Island, 10 South St, New York, NY 10004",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Governors Island Food Festival",
+    date: "2025-07-19",
+    time: "12:00 PM - 6:00 PM",
+    address: "Governors Island, 10 South St, New York, NY 10004",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Governors Island Jazz Festival",
+    date: "2025-07-26",
+    time: "2:00 PM - 7:00 PM",
+    address: "Governors Island, 10 South St, New York, NY 10004",
+    borough: "Manhattan",
+    link: "https://www.nycgovparks.org/events"
+  },
+
+  // Brooklyn NYC Parks Events
+  {
+    name: "Prospect Park Bandshell Concert",
+    date: "2025-07-06",
+    time: "7:30 PM - 9:30 PM",
+    address: "Prospect Park Bandshell, 9th St & Prospect Park West, Brooklyn, NY 11215",
+    borough: "Brooklyn",
+    link: "https://www.nycgovparks.org/parks/prospect-park/events"
+  },
+  {
+    name: "Prospect Park Summer Concert",
+    date: "2025-07-13",
+    time: "7:30 PM - 9:30 PM",
+    address: "Prospect Park Bandshell, 9th St & Prospect Park West, Brooklyn, NY 11215",
+    borough: "Brooklyn",
+    link: "https://www.nycgovparks.org/parks/prospect-park/events"
+  },
+  {
+    name: "Prospect Park Jazz Concert",
+    date: "2025-07-20",
+    time: "7:30 PM - 9:30 PM",
+    address: "Prospect Park Bandshell, 9th St & Prospect Park West, Brooklyn, NY 11215",
+    borough: "Brooklyn",
+    link: "https://www.nycgovparks.org/parks/prospect-park/events"
+  },
+  {
+    name: "Prospect Park World Music Night",
+    date: "2025-07-27",
+    time: "7:30 PM - 9:30 PM",
+    address: "Prospect Park Bandshell, 9th St & Prospect Park West, Brooklyn, NY 11215",
+    borough: "Brooklyn",
+    link: "https://www.nycgovparks.org/parks/prospect-park/events"
+  },
+  {
+    name: "Movies Under the Stars - Prospect Park",
+    date: "2025-07-21",
+    time: "8:00 PM - 10:00 PM",
+    address: "Prospect Park Long Meadow, Prospect Park West, Brooklyn, NY 11215",
+    borough: "Brooklyn",
+    link: "https://www.nycgovparks.org/events/free_summer_movies"
+  },
+
+  // Queens NYC Parks Events
+  {
+    name: "Queens County Farm Hayrides",
+    date: "2025-07-06",
+    time: "1:00 PM - 4:00 PM",
+    address: "Queens County Farm Museum, 73-50 Little Neck Pkwy, Floral Park, NY 11004",
+    borough: "Queens",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Flushing Meadows World Music Festival",
+    date: "2025-07-13",
+    time: "3:00 PM - 7:00 PM",
+    address: "Flushing Meadows Corona Park, Grand Central Pkwy, Flushing, NY 11368",
+    borough: "Queens",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Forest Park Summer Concert",
+    date: "2025-07-20",
+    time: "6:00 PM - 8:00 PM",
+    address: "Forest Park, Forest Park Dr, Woodhaven, NY 11421",
+    borough: "Queens",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Alley Pond Park Nature Walk",
+    date: "2025-07-27",
+    time: "10:00 AM - 12:00 PM",
+    address: "Alley Pond Park, 228-06 Northern Blvd, Douglaston, NY 11362",
+    borough: "Queens",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Movies Under the Stars - Flushing Meadows",
+    date: "2025-07-28",
+    time: "8:00 PM - 10:00 PM",
+    address: "Flushing Meadows Corona Park, Grand Central Pkwy, Flushing, NY 11368",
+    borough: "Queens",
+    link: "https://www.nycgovparks.org/events/free_summer_movies"
+  },
+
+  // The Bronx NYC Parks Events
+  {
+    name: "Bronx River Festival",
+    date: "2025-07-05",
+    time: "12:00 PM - 5:00 PM",
+    address: "Bronx River Park, E 177th St & Southern Blvd, Bronx, NY 10460",
+    borough: "The Bronx",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Van Cortlandt Park Summer Concert",
+    date: "2025-07-12",
+    time: "7:00 PM - 9:00 PM",
+    address: "Van Cortlandt Park, Van Cortlandt Park S, Bronx, NY 10463",
+    borough: "The Bronx",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Pelham Bay Park Nature Festival",
+    date: "2025-07-19",
+    time: "11:00 AM - 4:00 PM",
+    address: "Pelham Bay Park, Bruckner Blvd & Wilkinson Ave, Bronx, NY 10461",
+    borough: "The Bronx",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Crotona Park Summer Festival",
+    date: "2025-07-26",
+    time: "2:00 PM - 6:00 PM",
+    address: "Crotona Park, Crotona Ave & E 173rd St, Bronx, NY 10457",
+    borough: "The Bronx",
+    link: "https://www.nycgovparks.org/events"
+  },
+
+  // Staten Island NYC Parks Events
+  {
+    name: "Staten Island Boardwalk Summer Concert",
+    date: "2025-07-05",
+    time: "7:00 PM - 9:00 PM",
+    address: "Franklin D. Roosevelt Boardwalk, Staten Island, NY 10305",
+    borough: "Staten Island",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Conference House Park Cultural Festival",
+    date: "2025-07-12",
+    time: "1:00 PM - 5:00 PM",
+    address: "Conference House Park, 298 Satterlee St, Staten Island, NY 10307",
+    borough: "Staten Island",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Great Kills Park Beach Concert",
+    date: "2025-07-19",
+    time: "6:00 PM - 8:00 PM",
+    address: "Great Kills Park, Hylan Blvd, Staten Island, NY 10308",
+    borough: "Staten Island",
+    link: "https://www.nycgovparks.org/events"
+  },
+  {
+    name: "Snug Harbor Cultural Festival",
+    date: "2025-07-26",
+    time: "2:00 PM - 6:00 PM",
+    address: "Snug Harbor Cultural Center, 1000 Richmond Terrace, Staten Island, NY 10301",
+    borough: "Staten Island",
+    link: "https://www.nycgovparks.org/events"
   }
 ];
 
