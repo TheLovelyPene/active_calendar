@@ -643,8 +643,17 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     """
 
     # Add navigation links
-    for i, (iso_year, iso_week) in enumerate(sorted_weeks):
-        week_label = get_week_label(iso_year, iso_week)
+    for i, week_key in enumerate(sorted_weeks):
+        week_number = int(week_key.split('_')[1])
+        week_start_date = start_july + timedelta(days=week_number * 7)
+        week_end_date = min(week_start_date + timedelta(days=6), end_july)
+        
+        # Create week label
+        if week_number == 0:
+            week_label = f"Week of July 1-7, 2025"
+        else:
+            week_label = f"Week of July {week_start_date.day}-{week_end_date.day}, 2025"
+        
         week_id = f"week-{i}"
         html_content += f'<a href="#{week_id}">{week_label}</a>'
 
