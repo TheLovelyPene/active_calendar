@@ -1005,7 +1005,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         if week_events:
             for event in week_events:
                 borough_class = get_borough_class(event["borough"])
-                week_sections += generate_event_card(event, borough_class)
+                week_sections += generate_event_card(event)
         else:
             week_sections += '<p class="no-events">No events scheduled for this week</p>'
         
@@ -1047,7 +1047,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             
             if borough_events:
                 for event in borough_events:
-                    borough_sections += generate_event_card(event, borough_class)
+                    borough_sections += generate_event_card(event)
             else:
                 borough_sections += f'<p class="no-events">No events scheduled for {borough}</p>'
             
@@ -1175,7 +1175,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         
         .borough-button.manhattan {{ background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }}
         .borough-button.brooklyn {{ background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }}
-        .borough-button.queens {{ background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%); }}
+        .borough-button.queens {{ background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }}
         .borough-button.bronx {{ background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }}
         .borough-button.staten-island {{ background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); color: #333; }}
         .borough-button.asbury-park {{ background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); color: #333; }}
@@ -1235,6 +1235,105 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             opacity: 0.9;
         }}
         
+        /* Calendar Grid Layout */
+        .calendar-grid {{
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }}
+        
+        .calendar-day-header {{
+            background: #2c3e50;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        
+        .calendar-day {{
+            background: white;
+            min-height: 120px;
+            padding: 10px;
+            border: 1px solid #f0f0f0;
+            position: relative;
+        }}
+        
+        .calendar-day.empty {{
+            background: #f8f9fa;
+        }}
+        
+        .day-number {{
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }}
+        
+        .day-events {{
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }}
+        
+        .day-event {{
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.75rem;
+            border-left: 3px solid #ddd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }}
+        
+        .day-event:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }}
+        
+        .day-event.manhattan {{ border-left-color: #ff6b6b; }}
+        .day-event.brooklyn {{ border-left-color: #4ecdc4; }}
+        .day-event.queens {{ border-left-color: #3498db; }}
+        .day-event.bronx {{ border-left-color: #feca57; }}
+        .day-event.staten-island {{ border-left-color: #a8e6cf; }}
+        .day-event.asbury-park {{ border-left-color: #d1ecf1; }}
+        
+        .day-event-name {{
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+            line-height: 1.2;
+        }}
+        
+        .day-event-time {{
+            color: #7f8c8d;
+            font-size: 0.7rem;
+        }}
+        
+        .day-event-borough {{
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }}
+        
+        .day-event-borough.manhattan {{ background: #ff6b6b; color: white; }}
+        .day-event-borough.brooklyn {{ background: #4ecdc4; color: white; }}
+        .day-event-borough.queens {{ background: #3498db; color: white; }}
+        .day-event-borough.bronx {{ background: #feca57; color: #333; }}
+        .day-event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
+        .day-event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
+        
         .events-grid {{
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -1260,7 +1359,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         
         .event-card.manhattan {{ border-left-color: #ff6b6b; }}
         .event-card.brooklyn {{ border-left-color: #4ecdc4; }}
-        .event-card.queens {{ border-left-color: #45b7d1; }}
+        .event-card.queens {{ border-left-color: #3498db; }}
         .event-card.bronx {{ border-left-color: #feca57; }}
         .event-card.staten-island {{ border-left-color: #a8e6cf; }}
         .event-card.asbury-park {{ border-left-color: #d1ecf1; }}
@@ -1517,57 +1616,872 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     print("You can open 'nyc_events_calendar.html' in your web browser to view it.")
 
 def get_borough_class(borough):
-    """Convert borough name to CSS class name."""
-    borough_mapping = {
-        "Manhattan": "manhattan",
-        "Brooklyn": "brooklyn", 
-        "Queens": "queens",
-        "The Bronx": "bronx",
-        "Staten Island": "staten-island",
-        "Asbury Park, NJ": "asbury-park"
-    }
-    return borough_mapping.get(borough, "other")
+    """Get CSS class for borough color coding"""
+    borough_lower = borough.lower()
+    if 'manhattan' in borough_lower:
+        return 'manhattan'
+    elif 'brooklyn' in borough_lower:
+        return 'brooklyn'
+    elif 'queens' in borough_lower:
+        return 'queens'
+    elif 'bronx' in borough_lower:
+        return 'bronx'
+    elif 'staten island' in borough_lower:
+        return 'staten-island'
+    elif 'asbury park' in borough_lower:
+        return 'asbury-park'
+    else:
+        return 'other'
 
-def generate_event_card(event, borough_class):
-    """Generate HTML for a single event card."""
-    # Format the date - handle date ranges by using the start date
-    date_str = event["date"]
-    if " to " in date_str:
-        # For date ranges, use the start date
-        date_str = date_str.split(" to ")[0]
-    
-    event_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-    formatted_date = event_date.strftime("%A, %B %d")
-    
-    # If it's a date range, show that in the display
-    if " to " in event["date"]:
-        end_date_str = event["date"].split(" to ")[1]
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-        formatted_date = f"{formatted_date} - {end_date.strftime('%B %d')}"
-    
+def is_event_in_week(event, week_start):
+    """Check if an event falls within a given week"""
+    event_date = datetime.strptime(event['date'], '%Y-%m-%d').date()
+    week_end = week_start + timedelta(days=6)
+    return week_start <= event_date <= week_end
+
+def format_date(date_str):
+    """Format date string for display"""
+    # Handle date ranges like "2025-07-01 to 2025-07-13"
+    if ' to ' in date_str:
+        start_date = date_str.split(' to ')[0].strip()
+        end_date = date_str.split(' to ')[1].strip()
+        start_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        end_obj = datetime.strptime(end_date, '%Y-%m-%d')
+        return f"{start_obj.strftime('%B %d')} - {end_obj.strftime('%B %d, %Y')}"
+    else:
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        return date_obj.strftime('%B %d, %Y')
+
+def generate_event_card(event):
+    """Generate HTML for an event card"""
+    borough_class = get_borough_class(event['borough'])
     return f"""
         <div class="event-card {borough_class}">
-            <div class="event-name">{event['name']}</div>
+            <div class="event-header">
+                <div>
+                    <div class="event-title">{event['name']}</div>
+                </div>
+                <div class="event-date">{format_date(event['date'])}</div>
+            </div>
             <div class="event-details">
                 <div class="event-detail">
-                    <i>📅</i>
-                    <span class="event-date">{formatted_date}</span>
-                </div>
-                <div class="event-detail">
                     <i>🕒</i>
-                    <span class="event-time">{event['time']}</span>
+                    <span>{event['time']}</span>
                 </div>
                 <div class="event-detail">
                     <i>📍</i>
-                    <span class="event-address">{event['address']}</span>
+                    <span>{event['address']}</span>
                 </div>
             </div>
-            <span class="event-borough {borough_class}">{event['borough']}</span>
-            <a href="{event['link']}" target="_blank" rel="noopener noreferrer" class="event-link">
-                More Info
-            </a>
+            <div class="event-description">{event['address']}</div>
+            <div class="event-borough {borough_class}">{event['borough']}</div>
         </div>
     """
+
+def create_calendar_grid(week_events, week_start):
+    """Create a calendar grid for a week starting on the first of the month"""
+    days_of_week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    
+    # Create calendar grid HTML
+    calendar_html = '<div class="calendar-grid">'
+    
+    # Add day headers
+    for day_name in days_of_week:
+        calendar_html += f'<div class="calendar-day-header">{day_name}</div>'
+    
+    # Get the week's dates
+    week_dates = []
+    for i in range(7):
+        current_date = week_start + timedelta(days=i)
+        week_dates.append(current_date)
+    
+    # Create calendar days
+    for date in week_dates:
+        day_events = [event for event in week_events if event['date'] == date.strftime('%Y-%m-%d')]
+        
+        # Check if this date is in the current month
+        is_current_month = date.month == 7  # July 2025
+        
+        calendar_html += f'<div class="calendar-day{" empty" if not is_current_month else ""}">'
+        calendar_html += f'<div class="day-number">{date.day}</div>'
+        
+        if day_events and is_current_month:
+            calendar_html += '<div class="day-events">'
+            for event in day_events[:3]:  # Limit to 3 events per day for space
+                borough_class = get_borough_class(event['borough'])
+                calendar_html += f'''
+                    <div class="day-event {borough_class}" onclick="showEventDetails('{event['name']}', '{event['date']}', '{event['time']}', '{event['address']}', '{event['borough']}', '{event['address']}')">
+                        <div class="day-event-name">{event['name'][:25]}{"..." if len(event['name']) > 25 else ""}</div>
+                        <div class="day-event-time">{event['time']}</div>
+                        <div class="day-event-borough {borough_class}">{event['borough']}</div>
+                    </div>
+                '''
+            if len(day_events) > 3:
+                calendar_html += f'<div class="day-event-more">+{len(day_events) - 3} more</div>'
+            calendar_html += '</div>'
+        else:
+            calendar_html += '<div class="day-events"></div>'
+        
+        calendar_html += '</div>'
+    
+    calendar_html += '</div>'
+    return calendar_html
+
+def generate_html():
+    """Generate the HTML calendar"""
+    # Calculate week starts for July 2025 starting from the first of the month
+    events = nyc_free_events_database
+    july_start = date(2025, 7, 1)
+    july_end = date(2025, 7, 31)
+    
+    # Start from July 1st and create weeks
+    week_starts = []
+    current_week_start = july_start
+    
+    # Create weeks that contain July days
+    while current_week_start <= july_end:
+        week_starts.append(current_week_start)
+        current_week_start += timedelta(days=7)
+    
+    # Generate iCal content for download
+    ical_content = generate_ical_content(events)
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NYC Free Events Calendar - July 2025</title>
+        <style>
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }}
+            
+            body {{
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                padding: 20px;
+            }}
+            
+            .container {{
+                max-width: 1400px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }}
+            
+            .header {{
+                background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+                color: white;
+                text-align: center;
+                padding: 40px 20px;
+            }}
+            
+            .header h1 {{
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+                font-weight: 300;
+            }}
+            
+            .header p {{
+                font-size: 1.2rem;
+                opacity: 0.9;
+                margin-bottom: 20px;
+            }}
+            
+            .download-section {{
+                background: rgba(255, 255, 255, 0.1);
+                padding: 20px;
+                border-radius: 10px;
+                margin: 20px 0;
+            }}
+            
+            .download-button {{
+                display: inline-block;
+                background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 25px;
+                text-decoration: none;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                margin: 10px;
+            }}
+            
+            .download-button:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }}
+            
+            .navigation {{
+                background: white;
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+            }}
+            
+            .nav-section {{
+                margin-bottom: 20px;
+            }}
+            
+            .nav-section h3 {{
+                margin-bottom: 15px;
+                color: #2c3e50;
+                font-size: 1.1rem;
+            }}
+            
+            .nav-buttons {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 20px;
+            }}
+            
+            .nav-button {{
+                padding: 12px 20px;
+                border: none;
+                border-radius: 25px;
+                background: #ecf0f1;
+                color: #2c3e50;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 500;
+                text-decoration: none;
+                display: inline-block;
+            }}
+            
+            .nav-button:hover {{
+                background: #bdc3c7;
+                transform: translateY(-2px);
+            }}
+            
+            .nav-button.active {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }}
+            
+            .view-toggle {{
+                display: flex;
+                gap: 10px;
+                margin-bottom: 20px;
+            }}
+            
+            .toggle-button {{
+                padding: 10px 20px;
+                border: 2px solid #667eea;
+                background: white;
+                color: #667eea;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 500;
+            }}
+            
+            .toggle-button:hover {{
+                background: #667eea;
+                color: white;
+            }}
+            
+            .toggle-button.active {{
+                background: #667eea;
+                color: white;
+            }}
+            
+            .borough-buttons {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }}
+            
+            .borough-button {{
+                padding: 12px 20px;
+                border: none;
+                border-radius: 25px;
+                color: white;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.9rem;
+            }}
+            
+            .borough-button.manhattan {{ background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }}
+            .borough-button.brooklyn {{ background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }}
+            .borough-button.queens {{ background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }}
+            .borough-button.bronx {{ background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }}
+            .borough-button.staten-island {{ background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); color: #333; }}
+            .borough-button.asbury-park {{ background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); color: #333; }}
+            
+            .borough-button:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            }}
+            
+            .borough-button.active {{
+                transform: scale(1.1);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            }}
+            
+            .content-section {{
+                background: rgba(255, 255, 255, 0.95);
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }}
+            
+            .week-section {{
+                display: none;
+                animation: fadeIn 0.5s ease-in;
+            }}
+            
+            .week-section.active {{
+                display: block;
+            }}
+            
+            .borough-section {{
+                display: none;
+                animation: fadeIn 0.5s ease-in;
+            }}
+            
+            .borough-section.active {{
+                display: block;
+            }}
+            
+            .week-header {{
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border-radius: 10px;
+            }}
+            
+            .week-header h2 {{
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }}
+            
+            .week-header p {{
+                font-size: 1.1rem;
+                opacity: 0.9;
+            }}
+            
+            /* Calendar Grid Layout */
+            .calendar-grid {{
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 2px;
+                background: #e0e0e0;
+                border-radius: 10px;
+                overflow: hidden;
+                margin-top: 20px;
+            }}
+            
+            .calendar-day-header {{
+                background: #2c3e50;
+                color: white;
+                padding: 15px 10px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }}
+            
+            .calendar-day {{
+                background: white;
+                min-height: 120px;
+                padding: 10px;
+                border: 1px solid #f0f0f0;
+                position: relative;
+            }}
+            
+            .calendar-day.empty {{
+                background: #f8f9fa;
+                color: #ccc;
+            }}
+            
+            .day-number {{
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 8px;
+                font-size: 1.1rem;
+            }}
+            
+            .calendar-day.empty .day-number {{
+                color: #ccc;
+            }}
+            
+            .day-events {{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+            }}
+            
+            .day-event {{
+                background: white;
+                border-radius: 6px;
+                padding: 8px;
+                font-size: 0.75rem;
+                border-left: 3px solid #ddd;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }}
+            
+            .day-event:hover {{
+                transform: translateY(-1px);
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            }}
+            
+            .day-event.manhattan {{ border-left-color: #ff6b6b; }}
+            .day-event.brooklyn {{ border-left-color: #4ecdc4; }}
+            .day-event.queens {{ border-left-color: #3498db; }}
+            .day-event.bronx {{ border-left-color: #feca57; }}
+            .day-event.staten-island {{ border-left-color: #a8e6cf; }}
+            .day-event.asbury-park {{ border-left-color: #d1ecf1; }}
+            
+            .day-event-name {{
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 3px;
+                line-height: 1.2;
+            }}
+            
+            .day-event-time {{
+                color: #7f8c8d;
+                font-size: 0.7rem;
+            }}
+            
+            .day-event-borough {{
+                display: inline-block;
+                padding: 2px 6px;
+                border-radius: 8px;
+                font-size: 0.6rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                margin-top: 3px;
+            }}
+            
+            .day-event-borough.manhattan {{ background: #ff6b6b; color: white; }}
+            .day-event-borough.brooklyn {{ background: #4ecdc4; color: white; }}
+            .day-event-borough.queens {{ background: #3498db; color: white; }}
+            .day-event-borough.bronx {{ background: #feca57; color: #333; }}
+            .day-event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
+            .day-event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
+            
+            .day-event-more {{
+                text-align: center;
+                color: #7f8c8d;
+                font-size: 0.7rem;
+                font-style: italic;
+                padding: 5px;
+            }}
+            
+            .events-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+                margin-top: 20px;
+            }}
+            
+            .event-card {{
+                background: white;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+                border-left: 6px solid #ddd;
+                position: relative;
+                overflow: hidden;
+            }}
+            
+            .event-card:hover {{
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            }}
+            
+            .event-card.manhattan {{ border-left-color: #ff6b6b; }}
+            .event-card.brooklyn {{ border-left-color: #4ecdc4; }}
+            .event-card.queens {{ border-left-color: #3498db; }}
+            .event-card.bronx {{ border-left-color: #feca57; }}
+            .event-card.staten-island {{ border-left-color: #a8e6cf; }}
+            .event-card.asbury-park {{ border-left-color: #d1ecf1; }}
+            
+            .event-header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 15px;
+            }}
+            
+            .event-title {{
+                font-size: 1.3rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-bottom: 5px;
+                line-height: 1.3;
+            }}
+            
+            .event-date {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 20px;
+                font-size: 0.9rem;
+                font-weight: 500;
+            }}
+            
+            .event-details {{
+                margin-bottom: 15px;
+            }}
+            
+            .event-detail {{
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+                color: #555;
+            }}
+            
+            .event-detail i {{
+                margin-right: 10px;
+                color: #667eea;
+                width: 16px;
+            }}
+            
+            .event-description {{
+                color: #666;
+                line-height: 1.6;
+                font-size: 0.95rem;
+            }}
+            
+            .event-borough {{
+                display: inline-block;
+                padding: 6px 12px;
+                border-radius: 15px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                margin-top: 10px;
+            }}
+            
+            .event-borough.manhattan {{ background: #ff6b6b; color: white; }}
+            .event-borough.brooklyn {{ background: #4ecdc4; color: white; }}
+            .event-borough.queens {{ background: #3498db; color: white; }}
+            .event-borough.bronx {{ background: #feca57; color: #333; }}
+            .event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
+            .event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
+            
+            @keyframes fadeIn {{
+                from {{ opacity: 0; transform: translateY(20px); }}
+                to {{ opacity: 1; transform: translateY(0); }}
+            }}
+            
+            @media (max-width: 768px) {{
+                .calendar-grid {{
+                    grid-template-columns: 1fr;
+                }}
+                
+                .calendar-day-header {{
+                    display: none;
+                }}
+                
+                .calendar-day {{
+                    margin-bottom: 10px;
+                    border-radius: 10px;
+                }}
+                
+                .nav-buttons {{
+                    flex-direction: column;
+                }}
+                
+                .borough-buttons {{
+                    flex-direction: column;
+                }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>🗽 NYC Free Events Calendar</h1>
+                <p>July 2025 • Discover Amazing Free Events Across the City</p>
+                <div class="download-section">
+                    <h3>📅 Download to Your Calendar</h3>
+                    <p>Add all events to your personal calendar (Google Calendar, Outlook, Apple Calendar, etc.)</p>
+                    <a href="data:text/calendar;charset=utf-8,{ical_content}" download="nyc_free_events_july_2025.ics" class="download-button">
+                        📥 Download Calendar (.ics)
+                    </a>
+                    <a href="#" onclick="downloadSelectedEvents()" class="download-button">
+                        📥 Download Selected Events
+                    </a>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <div class="nav-section">
+                    <h3>📅 View Options</h3>
+                    <div class="view-toggle">
+                        <button class="toggle-button active" onclick="switchView('week')">Week View</button>
+                        <button class="toggle-button" onclick="switchView('destination')">Destination View</button>
+                    </div>
+                </div>
+                
+                <div class="nav-section" id="week-nav">
+                    <h3>📅 Jump to Week</h3>
+                    <div class="nav-buttons">
+    """
+    
+    # Add week navigation buttons
+    for i, week_start in enumerate(week_starts):
+        week_label = week_start.strftime("Week of %B %d")
+        html_content += f'<a href="#" class="nav-button{" active" if i == 0 else ""}" onclick="showWeek({i})">{week_label}</a>'
+    
+    html_content += """
+                    </div>
+                </div>
+                
+                <div class="nav-section" id="destination-nav" style="display: none;">
+                    <h3>🗺️ Browse by Destination</h3>
+                    <div class="borough-buttons">
+                        <button class="borough-button manhattan active" onclick="showBorough('manhattan')">Manhattan</button>
+                        <button class="borough-button brooklyn" onclick="showBorough('brooklyn')">Brooklyn</button>
+                        <button class="borough-button queens" onclick="showBorough('queens')">Queens</button>
+                        <button class="borough-button bronx" onclick="showBorough('bronx')">Bronx</button>
+                        <button class="borough-button staten-island" onclick="showBorough('staten-island')">Staten Island</button>
+                        <button class="borough-button asbury-park" onclick="showBorough('asbury-park')">Asbury Park</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+    """
+    
+    # Generate week sections with calendar grid
+    for i, week_start in enumerate(week_starts):
+        week_events = [event for event in events if is_event_in_week(event, week_start)]
+        week_end = week_start + timedelta(days=6)
+        
+        html_content += f"""
+                <div class="week-section{" active" if i == 0 else ""}" id="week-{i}">
+                    <div class="week-header">
+                        <h2>Week of {week_start.strftime('%B %d')}</h2>
+                        <p>{week_start.strftime('%B %d')} - {week_end.strftime('%B %d, %Y')}</p>
+                    </div>
+                    {create_calendar_grid(week_events, week_start)}
+                </div>
+        """
+    
+    # Generate borough sections
+    boroughs = ['manhattan', 'brooklyn', 'queens', 'bronx', 'staten-island', 'asbury-park']
+    for borough in boroughs:
+        borough_events = [event for event in events if get_borough_class(event['borough']) == borough]
+        
+        html_content += f"""
+                <div class="borough-section" id="borough-{borough}">
+                    <div class="week-header">
+                        <h2>{borough.replace('-', ' ').title()} Events</h2>
+                        <p>All free events in {borough.replace('-', ' ').title()}</p>
+                    </div>
+                    <div class="events-grid">
+        """
+        
+        for event in borough_events:
+            borough_class = get_borough_class(event['borough'])
+            html_content += f"""
+                        <div class="event-card {borough_class}">
+                            <div class="event-header">
+                                <div>
+                                    <div class="event-title">{event['name']}</div>
+                                </div>
+                                <div class="event-date">{format_date(event['date'])}</div>
+                            </div>
+                            <div class="event-details">
+                                <div class="event-detail">
+                                    <i>🕒</i>
+                                    <span>{event['time']}</span>
+                                </div>
+                                <div class="event-detail">
+                                    <i>📍</i>
+                                    <span>{event['address']}</span>
+                                </div>
+                            </div>
+                            <div class="event-description">{event['address']}</div>
+                            <div class="event-borough {borough_class}">{event['borough']}</div>
+                        </div>
+            """
+        
+        html_content += """
+                    </div>
+                </div>
+        """
+    
+    html_content += """
+            </div>
+        </div>
+        
+        <script>
+            function showWeek(weekIndex) {
+                // Hide all week sections
+                document.querySelectorAll('.week-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected week
+                document.getElementById(`week-${weekIndex}`).classList.add('active');
+                
+                // Update navigation buttons
+                document.querySelectorAll('#week-nav .nav-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+            
+            function showBorough(borough) {
+                // Hide all borough sections
+                document.querySelectorAll('.borough-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show selected borough
+                document.getElementById(`borough-${borough}`).classList.add('active');
+                
+                // Update borough buttons
+                document.querySelectorAll('.borough-button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                event.target.classList.add('active');
+            }
+            
+            function switchView(view) {
+                const weekNav = document.getElementById('week-nav');
+                const destinationNav = document.getElementById('destination-nav');
+                const toggleButtons = document.querySelectorAll('.toggle-button');
+                
+                if (view === 'week') {
+                    weekNav.style.display = 'block';
+                    destinationNav.style.display = 'none';
+                    
+                    // Show first week
+                    document.querySelectorAll('.week-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.querySelectorAll('.borough-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById('week-0').classList.add('active');
+                    
+                    // Update toggle buttons
+                    toggleButtons[0].classList.add('active');
+                    toggleButtons[1].classList.remove('active');
+                } else {
+                    weekNav.style.display = 'none';
+                    destinationNav.style.display = 'block';
+                    
+                    // Show first borough
+                    document.querySelectorAll('.week-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.querySelectorAll('.borough-section').forEach(section => {
+                        section.classList.remove('active');
+                    });
+                    document.getElementById('borough-manhattan').classList.add('active');
+                    
+                    // Update toggle buttons
+                    toggleButtons[0].classList.remove('active');
+                    toggleButtons[1].classList.add('active');
+                }
+            }
+            
+            function showEventDetails(name, date, time, location, borough, description) {
+                alert(`Event Details:\\n\\nName: ${name}\\nDate: ${date}\\nTime: ${time}\\nLocation: ${location}\\nBorough: ${borough}\\n\\nDescription: ${description}`);
+            }
+            
+            function downloadSelectedEvents() {
+                // This would allow users to select specific events and download them
+                alert('Feature coming soon! You can currently download all events using the main download button.');
+            }
+        </script>
+    </body>
+    </html>
+    """
+    
+    return html_content
+
+def generate_ical_content(events):
+    """Generate iCal content for calendar download"""
+    ical_content = """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//NYC Free Events Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:NYC Free Events - July 2025
+X-WR-CALDESC:Free events across NYC boroughs and Asbury Park
+"""
+    
+    for event in events:
+        # Parse date and time
+        event_date = datetime.strptime(event['date'], '%Y-%m-%d')
+        
+        # Create event start time (default to 7 PM if time is TBD)
+        time_str = event['time']
+        if 'TBD' in time_str or 'likely' in time_str.lower():
+            start_time = event_date.replace(hour=19, minute=0)  # 7 PM
+        else:
+            # Try to parse time like "7:00 PM – 8:30 PM"
+            try:
+                time_parts = time_str.split('–')[0].strip()
+                if 'PM' in time_parts:
+                    hour = int(time_parts.split(':')[0])
+                    if hour != 12:
+                        hour += 12
+                    minute = int(time_parts.split(':')[1].split()[0])
+                    start_time = event_date.replace(hour=hour, minute=minute)
+                elif 'AM' in time_parts:
+                    hour = int(time_parts.split(':')[0])
+                    if hour == 12:
+                        hour = 0
+                    minute = int(time_parts.split(':')[1].split()[0])
+                    start_time = event_date.replace(hour=hour, minute=minute)
+                else:
+                    start_time = event_date.replace(hour=19, minute=0)
+            except:
+                start_time = event_date.replace(hour=19, minute=0)
+        
+        # Create end time (1 hour later by default)
+        end_time = start_time + timedelta(hours=1)
+        
+        # Format dates for iCal
+        start_str = start_time.strftime('%Y%m%dT%H%M%S')
+        end_str = end_time.strftime('%Y%m%dT%H%M%S')
+        
+        # Clean event name and description for iCal
+        event_name = event['name'].replace('\n', ' ').replace('\r', ' ')
+        event_description = f"Location: {event['address']}\\nBorough: {event['borough']}\\nTime: {event['time']}"
+        if 'link' in event:
+            event_description += f"\\nMore info: {event['link']}"
+        
+        ical_content += f"""BEGIN:VEVENT
+UID:{event['date']}-{hash(event['name'])}@nycfreeevents.com
+DTSTART:{start_str}
+DTEND:{end_str}
+SUMMARY:{event_name}
+DESCRIPTION:{event_description}
+LOCATION:{event['address']}
+STATUS:CONFIRMED
+SEQUENCE:0
+END:VEVENT
+"""
+    
+    ical_content += "END:VCALENDAR"
+    return ical_content
 
 # --- Execute the HTML generation ---
 if __name__ == "__main__":
