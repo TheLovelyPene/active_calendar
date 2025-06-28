@@ -614,6 +614,10 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
                 background-color: #ffffff;
                 border-radius: 1rem;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                display: none; /* Hide all weeks by default */
+            }
+            .week-section.active {
+                display: block; /* Show only the active week */
             }
             .week-nav {
                 position: sticky;
@@ -633,11 +637,47 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
                 text-decoration: none;
                 border-radius: 0.5rem;
                 transition: background-color 0.2s;
+                cursor: pointer;
             }
             .week-nav a:hover {
                 background-color: #2c5aa0;
             }
+            .week-nav a.active {
+                background-color: #2c5aa0;
+                font-weight: bold;
+            }
         </style>
+        <script>
+            function showWeek(weekId) {
+                // Hide all week sections
+                const allWeeks = document.querySelectorAll('.week-section');
+                allWeeks.forEach(week => {
+                    week.classList.remove('active');
+                });
+                
+                // Show the selected week
+                const selectedWeek = document.getElementById(weekId);
+                if (selectedWeek) {
+                    selectedWeek.classList.add('active');
+                }
+                
+                // Update navigation links
+                const allNavLinks = document.querySelectorAll('.week-nav a');
+                allNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                const activeNavLink = document.querySelector(`[onclick="showWeek('${weekId}')"]`);
+                if (activeNavLink) {
+                    activeNavLink.classList.add('active');
+                }
+            }
+            
+            // Show the first week by default when page loads
+            window.onload = function() {
+                showWeek('week-0');
+            };
+        </script>
     </head>
     <body class="p-4">
         <div class="max-w-6xl mx-auto">
@@ -659,7 +699,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         week_label = f"Week of {nav_week_start.strftime('%B %d')}, {nav_week_start.year}"
         
         week_id = f"week-{i}"
-        html_content += f'<a href="#{week_id}">{week_label}</a>'
+        html_content += f'<a onclick="showWeek(\'{week_id}\')">{week_label}</a>'
 
     html_content += """
             </div>
