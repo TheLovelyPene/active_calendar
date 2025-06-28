@@ -60,6 +60,14 @@ nyc_free_events_database = [
         "link": "https://www.timeout.com/newyork/events-calendar/july-events-calendar"
     },
     {
+        "name": "East Village Street Fair",
+        "date": "2025-07-05",
+        "time": "10:00 AM",
+        "address": "East Village (exact location TBD, likely main streets), Manhattan",
+        "borough": "Manhattan",
+        "link": "https://www.clubfreetime.com/new-york-city-nyc/free-fair/2025-07-05/event/688018"
+    },
+    {
         "name": "Taikoza Drumming Performance",
         "date": "2025-07-08",
         "time": "3:00 PM – 4:00 PM",
@@ -172,6 +180,14 @@ nyc_free_events_database = [
         "link": "https://bryantpark.org/activities/picnic-performances"
     },
     {
+        "name": "Summer Streets NYC",
+        "date": "2025-07-26",
+        "time": "7:00 AM – 3:00 PM",
+        "address": "Park Avenue & other car-free streets, Manhattan",
+        "borough": "Manhattan",
+        "link": "https://www.unlimitedbiking.com/blog/bike-events/summer-streets-nyc-2025-a-car%E2%80%91free-celebration-of-the-city/"
+    },
+    {
         "name": "Hudson River Park's Jazz at Pier 84",
         "date": "2025-07-30",
         "time": "7:00 PM – 8:30 PM",
@@ -198,7 +214,15 @@ nyc_free_events_database = [
         "link": "https://www.iloveny.com/blog/post/things-to-do-this-july-in-new-york-state/"
     },
     {
-        "name": "Summer Market at Empire Stores in Dumbo", # Added fair
+        "name": "Flatbush Avenue Street Fair",
+        "date": "2025-07-13",
+        "time": "12:00 PM - 6:00 PM",
+        "address": "Parkside Ave to Courtelyou Road, Flatbush, Brooklyn",
+        "borough": "Brooklyn",
+        "link": "https://brooklynbridgeparents.com/outdoor-festivals-and-street-fairs-in-brooklyn-in-2025/"
+    },
+    {
+        "name": "Summer Market at Empire Stores in Dumbo",
         "date": "2025-07-12 to 2025-07-13",
         "time": "TBD (likely daytime)",
         "address": "Empire Stores, Dumbo, Brooklyn",
@@ -230,6 +254,14 @@ nyc_free_events_database = [
         "link": "https://bricartsmedia.org/celebrate-brooklyn/"
     },
     {
+        "name": "Summer Stroll on Third Avenue",
+        "date": "2025-07-18",
+        "time": "6:00 PM - 10:00 PM",
+        "address": "82nd Street to Marine Avenue, Bay Ridge, Brooklyn",
+        "borough": "Brooklyn",
+        "link": "https://brooklynbridgeparents.com/outdoor-festivals-and-street-fairs-in-brooklyn-in-2025/"
+    },
+    {
         "name": "BRIC Celebrate Brooklyn! (Men I Trust and strongboi)",
         "date": "2025-07-18",
         "time": "TBD (likely evening)",
@@ -247,14 +279,14 @@ nyc_free_events_database = [
     },
     {
         "name": "Rise Up NYC Concert Series (Brooklyn Dates)",
-        "date": "2025-07-19 to 2025-07-21", # Series runs over these dates
+        "date": "2025-07-19 to 2025-07-21",
         "time": "TBD (check link closer to date)",
         "address": "Venue details coming soon, Brooklyn",
         "borough": "Brooklyn",
         "link": "https://riseupnycconcerts.com/rise-up-nyc-2025-official-dates-announced-for-the-citys-biggest-free-concert-series/"
     },
     {
-        "name": "Governors Island Market", # Added fair
+        "name": "Governors Island Market",
         "date": "2025-07-19 to 2025-07-20",
         "time": "TBD (likely daytime)",
         "address": "Governors Island (accessible via ferry from Manhattan or Brooklyn)",
@@ -262,7 +294,15 @@ nyc_free_events_database = [
         "link": "https://www.timeout.com/newyork/events-calendar/july-events-calendar"
     },
     {
-        "name": "Summer Market in Cobble Hill", # Added fair
+        "name": "Summer Stroll on Third Avenue",
+        "date": "2025-07-25",
+        "time": "6:00 PM - 10:00 PM",
+        "address": "68th Street to 82nd Street, Bay Ridge, Brooklyn",
+        "borough": "Brooklyn",
+        "link": "https://brooklynbridgeparents.com/outdoor-festivals-and-street-fairs-in-brooklyn-in-2025/"
+    },
+    {
+        "name": "Summer Market in Cobble Hill",
         "date": "2025-07-26 to 2025-07-27",
         "time": "TBD (likely daytime)",
         "address": "Cobble Hill, Brooklyn",
@@ -270,12 +310,20 @@ nyc_free_events_database = [
         "link": "https://www.timeout.com/newyork/events-calendar/july-events-calendar"
     },
     {
-        "name": "FREE art market in Brooklyn", # Added fair
-        "date": "2025-07-26 to 2025-07-27", # Changed to range as per source
+        "name": "FREE art market in Brooklyn",
+        "date": "2025-07-26 to 2025-07-27",
         "time": "1:00 PM - 7:00 PM EDT",
         "address": "26 Bridge St, Brooklyn, NY 11201",
         "borough": "Brooklyn",
         "link": "https://www.eventbrite.co.uk/e/free-art-market-in-brooklyn-tickets-1310673171739"
+    },
+    {
+        "name": "FREE Community Fair at Brooklyn RISE Charter School",
+        "date": "2025-07-26",
+        "time": "12:00 PM - 4:00 PM",
+        "address": "9 Hanover Pl, Brooklyn, NY 11217",
+        "borough": "Brooklyn",
+        "link": "https://www.eventbrite.com/e/free-community-fair-at-brooklyn-rise-charter-school-tickets-1431990254399?aff=erelexpmlt"
     },
     {
         "name": "BRIC Celebrate Brooklyn! (A Tribute to Quincy Jones: The Wiz)",
@@ -344,6 +392,14 @@ nyc_free_events_database = [
         "link": "https://forestparktrust.org/events/2024-summer-concert-series-4acsh"
     },
     {
+        "name": "Basement Bhangra Beyond",
+        "date": "2025-07-19",
+        "time": "6:00 PM",
+        "address": "Adjacent to Unisphere, Flushing Meadows-Corona Park, Queens",
+        "borough": "Queens",
+        "link": "https://qns.com/2025/06/richards-queens-day-july-free-concert-the-roots/"
+    },
+    {
         "name": "Queens Day! (Concert with The Roots)",
         "date": "2025-07-20",
         "time": "10:00 AM – 8:00 PM (Festivities, concert time TBD)",
@@ -369,7 +425,7 @@ nyc_free_events_database = [
     },
     {
         "name": "MoMA PS1 Warm Up",
-        "date": "2025-07-18",
+        "date": "2025-07-25",
         "time": "TBD (likely evening)",
         "address": "MoMA PS1, Long Island City, Queens",
         "borough": "Queens",
@@ -392,6 +448,34 @@ nyc_free_events_database = [
         "link": "https://forestparktrust.org/events/2024-summer-concert-series-4acsh"
     },
 
+    # --- The Bronx Events ---
+    # Note: Events from The Bronx are currently filtered out in App.js.
+    # To display them, remove or modify the filter in App.js.
+    {
+        "name": "Bronx Pride Festival & Health Fair",
+        "date": "2025-07-19",
+        "time": "TBD (likely daytime)",
+        "address": "TBD (check link closer to date), The Bronx",
+        "borough": "The Bronx",
+        "link": "https://bucketlisters.com/inspiration/443-every-street-festival-in-new-york-city-this-summer"
+    },
+    {
+        "name": "Bronx Night Market",
+        "date": "2025-07-26",
+        "time": "TBD (likely evening)",
+        "address": "TBD (check link closer to date), The Bronx",
+        "borough": "The Bronx",
+        "link": "https://bucketlisters.com/inspiration/443-every-street-festival-in-new-york-city-this-summer"
+    },
+    {
+        "name": "Summer Streets NYC (Bronx route)",
+        "date": "2025-07-26",
+        "time": "7:00 AM – 3:00 PM",
+        "address": "Poe Park (E 192nd & Kingsbridge Rd), The Bronx",
+        "borough": "The Bronx",
+        "link": "https://www.unlimitedbiking.com/blog/bike-events/summer-streets-nyc-2025-a-car%E2%80%91free-celebration-of-the-city/"
+    },
+
     # --- Asbury Park, NJ Events ---
     {
         "name": "Asbury Park Spring Bazaar",
@@ -403,6 +487,38 @@ nyc_free_events_database = [
     },
 
     # --- Staten Island Events ---
+    {
+        "name": "Our Lady of Mount Carmel Feast / Celebration",
+        "date": "2025-07-13 to 2025-07-27",
+        "time": "TBD (check link closer to date)",
+        "address": "Rosebank, Staten Island",
+        "borough": "Staten Island",
+        "link": "https://www.statenbuzz.nyc/article/113/staten-island-street-fairs---staten-island-nyc"
+    },
+    {
+        "name": "Cottage Row Curiosities",
+        "date": "2025-07-19",
+        "time": "11:00 AM - 4:00 PM",
+        "address": "Snug Harbor Cultural Center, 1000 Richmond Terrace, Randall Manor, Staten Island",
+        "borough": "Staten Island",
+        "link": "https://www.statenbuzz.nyc/article/113/staten-island-street-fairs---staten-island-nyc"
+    },
+    {
+        "name": "Stars, Stripes and Staten Sights (Vendor Fair)",
+        "date": "2025-07-04",
+        "time": "12:00 PM – 8:00 PM",
+        "address": "Empire Outlets, 55 Richmond Terrace, Staten Island",
+        "borough": "Staten Island",
+        "link": "https://www.siparent.com/4th-of-july-events-in-staten-island-2025/"
+    },
+    {
+        "name": "Pizza Party 2025",
+        "date": "2025-07-26",
+        "time": "TBD (likely daytime)",
+        "address": "Snug Harbor Cultural Center & Botanical Garden, Staten Island",
+        "borough": "Staten Island",
+        "link": "https://allevents.in/staten-island/festivals"
+    },
     {
         "name": "Rosebank Street Tree Care (Volunteer Event)",
         "date": "2025-07-26",
@@ -427,7 +543,7 @@ nyc_free_events_database = [
         "borough": "Staten Island",
         "link": "https://secretnyc.co/free-summer-concerts-2025-full-list/"
     }
-]
+];
 
 # Define colors for each borough (you can customize these)
 BOROUGH_COLORS = {
