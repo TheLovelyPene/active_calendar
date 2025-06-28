@@ -1239,63 +1239,78 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         .calendar-grid {{
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
+            gap: 1px;
             background: #e0e0e0;
             border-radius: 10px;
             overflow: hidden;
             margin-top: 20px;
+            min-height: 600px;
         }}
         
         .calendar-day-header {{
             background: #2c3e50;
             color: white;
-            padding: 15px 10px;
+            padding: 12px 8px;
             text-align: center;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }}
         
         .calendar-day {{
             background: white;
-            min-height: 120px;
-            padding: 10px;
+            min-height: 140px;
+            padding: 8px;
             border: 1px solid #f0f0f0;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }}
         
         .calendar-day.empty {{
             background: #f8f9fa;
+            color: #ccc;
         }}
         
         .day-number {{
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            margin-bottom: 6px;
+            font-size: 1rem;
+            text-align: center;
+            padding: 2px;
+            border-radius: 3px;
+        }}
+        
+        .calendar-day.empty .day-number {{
+            color: #ccc;
         }}
         
         .day-events {{
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 3px;
+            flex: 1;
+            overflow-y: auto;
         }}
         
         .day-event {{
             background: white;
-            border-radius: 6px;
-            padding: 8px;
-            font-size: 0.75rem;
-            border-left: 3px solid #ddd;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            border-left: 2px solid #ddd;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2px;
         }}
         
         .day-event:hover {{
             transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            z-index: 10;
         }}
         
         .day-event.manhattan {{ border-left-color: #ff6b6b; }}
@@ -1308,23 +1323,25 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         .day-event-name {{
             font-weight: 600;
             color: #2c3e50;
-            margin-bottom: 3px;
-            line-height: 1.2;
+            margin-bottom: 2px;
+            line-height: 1.1;
+            font-size: 0.65rem;
         }}
         
         .day-event-time {{
             color: #7f8c8d;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
+            margin-bottom: 2px;
         }}
         
         .day-event-borough {{
             display: inline-block;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-size: 0.6rem;
+            padding: 1px 4px;
+            border-radius: 6px;
+            font-size: 0.55rem;
             font-weight: 600;
             text-transform: uppercase;
-            margin-top: 3px;
+            letter-spacing: 0.3px;
         }}
         
         .day-event-borough.manhattan {{ background: #ff6b6b; color: white; }}
@@ -1707,17 +1724,19 @@ def create_calendar_grid(week_events, week_start):
         
         if day_events and is_current_month:
             calendar_html += '<div class="day-events">'
-            for event in day_events[:3]:  # Limit to 3 events per day for space
+            for event in day_events:
                 borough_class = get_borough_class(event['borough'])
+                # Show event name and time in a compact format
+                event_name_short = event['name'][:20] + ("..." if len(event['name']) > 20 else "")
+                time_short = event['time'].split('–')[0].strip() if '–' in event['time'] else event['time'][:8]
+                
                 calendar_html += f'''
                     <div class="day-event {borough_class}" onclick="showEventDetails('{event['name']}', '{event['date']}', '{event['time']}', '{event['address']}', '{event['borough']}', '{event['address']}')">
-                        <div class="day-event-name">{event['name'][:25]}{"..." if len(event['name']) > 25 else ""}</div>
-                        <div class="day-event-time">{event['time']}</div>
-                        <div class="day-event-borough {borough_class}">{event['borough']}</div>
+                        <div class="day-event-name">{event_name_short}</div>
+                        <div class="day-event-time">{time_short}</div>
+                        <div class="day-event-borough {borough_class}">{event['borough'][:3]}</div>
                     </div>
                 '''
-            if len(day_events) > 3:
-                calendar_html += f'<div class="day-event-more">+{len(day_events) - 3} more</div>'
             calendar_html += '</div>'
         else:
             calendar_html += '<div class="day-events"></div>'
@@ -1977,30 +1996,33 @@ def generate_html():
             .calendar-grid {{
                 display: grid;
                 grid-template-columns: repeat(7, 1fr);
-                gap: 2px;
+                gap: 1px;
                 background: #e0e0e0;
                 border-radius: 10px;
                 overflow: hidden;
                 margin-top: 20px;
+                min-height: 600px;
             }}
             
             .calendar-day-header {{
                 background: #2c3e50;
                 color: white;
-                padding: 15px 10px;
+                padding: 12px 8px;
                 text-align: center;
                 font-weight: 600;
-                font-size: 0.9rem;
+                font-size: 0.85rem;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }}
             
             .calendar-day {{
                 background: white;
-                min-height: 120px;
-                padding: 10px;
+                min-height: 140px;
+                padding: 8px;
                 border: 1px solid #f0f0f0;
                 position: relative;
+                display: flex;
+                flex-direction: column;
             }}
             
             .calendar-day.empty {{
@@ -2011,8 +2033,11 @@ def generate_html():
             .day-number {{
                 font-weight: 600;
                 color: #2c3e50;
-                margin-bottom: 8px;
-                font-size: 1.1rem;
+                margin-bottom: 6px;
+                font-size: 1rem;
+                text-align: center;
+                padding: 2px;
+                border-radius: 3px;
             }}
             
             .calendar-day.empty .day-number {{
@@ -2022,23 +2047,27 @@ def generate_html():
             .day-events {{
                 display: flex;
                 flex-direction: column;
-                gap: 5px;
+                gap: 3px;
+                flex: 1;
+                overflow-y: auto;
             }}
             
             .day-event {{
                 background: white;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 0.75rem;
-                border-left: 3px solid #ddd;
+                border-radius: 4px;
+                padding: 4px 6px;
+                font-size: 0.7rem;
+                border-left: 2px solid #ddd;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                margin-bottom: 2px;
             }}
             
             .day-event:hover {{
                 transform: translateY(-1px);
-                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+                z-index: 10;
             }}
             
             .day-event.manhattan {{ border-left-color: #ff6b6b; }}
@@ -2051,23 +2080,25 @@ def generate_html():
             .day-event-name {{
                 font-weight: 600;
                 color: #2c3e50;
-                margin-bottom: 3px;
-                line-height: 1.2;
+                margin-bottom: 2px;
+                line-height: 1.1;
+                font-size: 0.65rem;
             }}
             
             .day-event-time {{
                 color: #7f8c8d;
-                font-size: 0.7rem;
+                font-size: 0.6rem;
+                margin-bottom: 2px;
             }}
             
             .day-event-borough {{
                 display: inline-block;
-                padding: 2px 6px;
-                border-radius: 8px;
-                font-size: 0.6rem;
+                padding: 1px 4px;
+                border-radius: 6px;
+                font-size: 0.55rem;
                 font-weight: 600;
                 text-transform: uppercase;
-                margin-top: 3px;
+                letter-spacing: 0.3px;
             }}
             
             .day-event-borough.manhattan {{ background: #ff6b6b; color: white; }}
