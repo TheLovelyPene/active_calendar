@@ -65,6 +65,10 @@
                 background-color: #ffffff;
                 border-radius: 1rem;
                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                display: none; /* Hide all weeks by default */
+            }
+            .week-section.active {
+                display: block; /* Show only the active week */
             }
             .week-nav {
                 position: sticky;
@@ -84,11 +88,47 @@
                 text-decoration: none;
                 border-radius: 0.5rem;
                 transition: background-color 0.2s;
+                cursor: pointer;
             }
             .week-nav a:hover {
                 background-color: #2c5aa0;
             }
+            .week-nav a.active {
+                background-color: #2c5aa0;
+                font-weight: bold;
+            }
         </style>
+        <script>
+            function showWeek(weekId) {
+                // Hide all week sections
+                const allWeeks = document.querySelectorAll('.week-section');
+                allWeeks.forEach(week => {
+                    week.classList.remove('active');
+                });
+                
+                // Show the selected week
+                const selectedWeek = document.getElementById(weekId);
+                if (selectedWeek) {
+                    selectedWeek.classList.add('active');
+                }
+                
+                // Update navigation links
+                const allNavLinks = document.querySelectorAll('.week-nav a');
+                allNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                const activeNavLink = document.querySelector(`[onclick="showWeek('${weekId}')"]`);
+                if (activeNavLink) {
+                    activeNavLink.classList.add('active');
+                }
+            }
+            
+            // Show the first week by default when page loads
+            window.onload = function() {
+                showWeek('week-0');
+            };
+        </script>
     </head>
     <body class="p-4">
         <div class="max-w-6xl mx-auto">
@@ -98,7 +138,7 @@
             <!-- Week Navigation -->
             <div class="week-nav">
                 <h3 class="text-lg font-semibold mb-2">Jump to Week:</h3>
-    <a href="#week-0">Week of June 30, 2025</a><a href="#week-1">Week of July 07, 2025</a><a href="#week-2">Week of July 14, 2025</a><a href="#week-3">Week of July 21, 2025</a><a href="#week-4">Week of July 28, 2025</a>
+    <a onclick="showWeek('week-0')">Week of June 30, 2025</a><a onclick="showWeek('week-1')">Week of July 07, 2025</a><a onclick="showWeek('week-2')">Week of July 14, 2025</a><a onclick="showWeek('week-3')">Week of July 21, 2025</a><a onclick="showWeek('week-4')">Week of July 28, 2025</a>
             </div>
     
             <div id="week-0" class="week-section">
