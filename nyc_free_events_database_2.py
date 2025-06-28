@@ -1690,7 +1690,7 @@ def generate_event_card(event):
                     <span>{event['address']}</span>
                 </div>
             </div>
-            <div class="event-description">{event['address']}</div>
+            <div class="event-description">Free event in {event['borough']}</div>
             <div class="event-borough {borough_class}">{event['borough']}</div>
         </div>
     """
@@ -1715,6 +1715,32 @@ def create_calendar_grid(week_events, week_start):
     # Create calendar days
     for date in week_dates:
         day_events = [event for event in week_events if event['date'] == date.strftime('%Y-%m-%d')]
+        
+        # Sort events by time (convert time to sortable format)
+        def get_time_sort_key(event):
+            time_str = event['time']
+            # Handle TBD times by putting them at the end
+            if 'TBD' in time_str or 'likely' in time_str.lower():
+                return '23:59'
+            # Extract start time
+            time_parts = time_str.split('–')[0].strip()
+            # Convert to 24-hour format for sorting
+            if 'PM' in time_parts and '12:' not in time_parts:
+                hour = int(time_parts.split(':')[0]) + 12
+                minute = int(time_parts.split(':')[1].split()[0])
+            elif 'AM' in time_parts and '12:' in time_parts:
+                hour = 0
+                minute = int(time_parts.split(':')[1].split()[0])
+            elif 'AM' in time_parts:
+                hour = int(time_parts.split(':')[0])
+                minute = int(time_parts.split(':')[1].split()[0])
+            else:
+                hour = int(time_parts.split(':')[0])
+                minute = int(time_parts.split(':')[1].split()[0])
+            return f"{hour:02d}:{minute:02d}"
+        
+        # Sort events by time
+        day_events.sort(key=get_time_sort_key)
         
         # Check if this date is in the current month
         is_current_month = date.month == 7  # July 2025
