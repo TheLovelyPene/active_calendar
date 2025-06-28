@@ -891,8 +891,8 @@ def get_iso_week_from_date_str(date_str):
 
 def generate_weekly_events_html(events_data, output_filename="nyc_events_calendar.html"):
     """
-    Generates a single HTML file with weekly sections from the provided events data,
-    including navigation between weeks and color-coding by borough.
+    Generates a single HTML file with both weekly and borough-based navigation,
+    including a toggle between week view and destination view.
 
     Args:
         events_data (list of dict): A list of dictionaries with event details.
@@ -905,7 +905,6 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     events_by_week = {}
 
     # Start from the Monday of the week containing July 1st
-    # July 1st, 2025 is a Tuesday, so the week starts Monday June 30th
     start_july = date(2025, 7, 1)
     end_july = date(2025, 7, 31)
     
@@ -932,10 +931,6 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
 
     # Populate events into their respective weeks and days
     for event in filtered_events_data:
-        # Debug: Print July 2nd events to see what's happening
-        if event["date"] == "2025-07-02":
-            print(f"Processing July 2nd event: {event['name']}")
-        
         # Handle date ranges by adding event to each relevant day within the range
         if " to " in event["date"]:
             start_date_str, end_date_str = event["date"].split(" to ")
@@ -953,8 +948,6 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
                     # Calculate day of week (1=Monday, 7=Sunday)
                     weekday = current_event_date.weekday() + 1
                     events_by_week[week_key][weekday].append(event)
-                    if event["date"] == "2025-07-02":
-                        print(f"Added July 2nd event to week {week_key}, day {weekday}")
                 current_event_date += timedelta(days=1)
         else:
             event_date = datetime.strptime(event["date"], "%Y-%m-%d").date()
@@ -967,250 +960,614 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
                 # Calculate day of week (1=Monday, 7=Sunday)
                 weekday = event_date.weekday() + 1
                 events_by_week[week_key][weekday].append(event)
-                if event["date"] == "2025-07-02":
-                    print(f"Added July 2nd event to week {week_key}, day {weekday}")
-            else:
-                if event["date"] == "2025-07-02":
-                    print(f"July 2nd event NOT added - week {week_key} not in events_by_week")
 
     # Get a sorted list of week keys
     sorted_weeks = sorted(events_by_week.keys(), key=lambda x: int(x.split('_')[1]))
 
-    # Start building the HTML content
-    html_content = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NYC & NJ Free Events - July 2025</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-        <style>
-            body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
-            .event-card {
-                border-radius: 0.75rem; /* rounded-lg */
-                box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06); /* shadow-sm */
-                margin-bottom: 0.75rem; /* mb-3 */
-                padding: 0.75rem; /* p-3 */
-                transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            }
-            .event-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.08);
-            }
-            .borough-manhattan { background-color: #f8d7da; } /* Light Red */
-            .borough-brooklyn { background-color: #d4edda; }  /* Light Green */
-            .borough-queens { background-color: #cce5ff; }    /* Light Blue */
-            .borough-the-bronx { background-color: #fff3cd; } /* Light Yellow */
-            .borough-staten-island { background-color: #e2e3e5; } /* Light Grey */
-            .borough-asbury-park-nj { background-color: #d1ecf1; } /* Light Teal/Cyan for NJ */
-            .borough-manhattan-primary-launch-area { background-color: #f8d7da; } /* Same as Manhattan */
-            .borough-brooklyn-accessible-shared { background-color: #d4edda; } /* Same as Brooklyn */
-            .event-title {
-                font-weight: bold;
-                font-size: 1.125rem; /* text-lg */
-                margin-bottom: 0.25rem; /* mb-1 */
-                color: #2d3748; /* gray-800 */
-            }
-            .event-detail {
-                font-size: 0.75rem; /* text-xs */
-                color: #4a5568; /* gray-700 */
-                margin-bottom: 0.125rem; /* mb-px */
-            }
-            .event-link {
-                color: #3182ce; /* blue-600 */
-                text-decoration: underline;
-                word-break: break-all;
-            }
-            .day-card {
-                background-color: #ffffff;
-                border-radius: 0.75rem; /* rounded-lg */
-                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm */
-                padding: 1rem;
-                margin-bottom: 1rem;
-            }
-            .day-header {
-                font-size: 1.25rem; /* text-xl */
-                font-weight: bold;
-                color: #2d3748;
-                margin-bottom: 0.75rem;
-                border-bottom: 2px solid #edf2f7; /* gray-200 */
-                padding-bottom: 0.5rem;
-            }
-            .week-section {
-                margin-bottom: 3rem;
-                padding: 2rem;
-                background-color: #ffffff;
-                border-radius: 1rem;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                display: none; /* Hide all weeks by default */
-            }
-            .week-section.active {
-                display: block; /* Show only the active week */
-            }
-            .week-nav {
-                position: sticky;
-                top: 0;
-                background-color: #ffffff;
-                padding: 1rem;
-                border-bottom: 2px solid #edf2f7;
-                z-index: 100;
-                margin-bottom: 2rem;
-            }
-            .week-nav a {
-                display: inline-block;
-                margin: 0 0.5rem;
-                padding: 0.5rem 1rem;
-                background-color: #3182ce;
-                color: white;
-                text-decoration: none;
-                border-radius: 0.5rem;
-                transition: background-color 0.2s;
-                cursor: pointer;
-            }
-            .week-nav a:hover {
-                background-color: #2c5aa0;
-            }
-            .week-nav a.active {
-                background-color: #2c5aa0;
-                font-weight: bold;
-            }
-        </style>
-        <script>
-            function showWeek(weekId) {
-                // Hide all week sections
-                const allWeeks = document.querySelectorAll('.week-section');
-                allWeeks.forEach(week => {
-                    week.classList.remove('active');
-                });
-                
-                // Show the selected week
-                const selectedWeek = document.getElementById(weekId);
-                if (selectedWeek) {
-                    selectedWeek.classList.add('active');
-                }
-                
-                // Update navigation links
-                const allNavLinks = document.querySelectorAll('.week-nav a');
-                allNavLinks.forEach(link => {
-                    link.classList.remove('active');
-                });
-                
-                const activeNavLink = document.querySelector(`[onclick="showWeek('${weekId}')"]`);
-                if (activeNavLink) {
-                    activeNavLink.classList.add('active');
-                }
-            }
-            
-            // Show the first week by default when page loads
-            window.onload = function() {
-                showWeek('week-0');
-            };
-        </script>
-    </head>
-    <body class="p-4">
-        <div class="max-w-6xl mx-auto">
-            <h1 class="text-4xl font-bold text-center text-gray-800 mb-6">NYC & NJ Free Events - July 2025</h1>
-            <p class="text-center text-gray-600 mb-8">Festivals, Fairs, and Concerts</p>
-            
-            <!-- Week Navigation -->
-            <div class="week-nav">
-                <h3 class="text-lg font-semibold mb-2">Jump to Week:</h3>
-    """
+    # Group events by borough for borough view
+    events_by_borough = {}
+    for event in filtered_events_data:
+        borough = event["borough"]
+        if borough not in events_by_borough:
+            events_by_borough[borough] = []
+        events_by_borough[borough].append(event)
 
-    # Add navigation links
+    # Generate week navigation
+    week_navigation = ""
     for i, week_key in enumerate(sorted_weeks):
-        week_number = int(week_key.split('_')[1])
-        nav_week_start = week_start_date + timedelta(days=week_number * 7)
-        nav_week_end = nav_week_start + timedelta(days=6)
-        
-        # Create week label
-        week_label = f"Week of {nav_week_start.strftime('%B %d')}, {nav_week_start.year}"
-        
-        week_id = f"week-{i}"
-        
-        # Add 'active' class to the first navigation link
-        active_class = " active" if i == 0 else ""
-        
-        html_content += f'<a onclick="showWeek(\'{week_id}\')" class="{active_class}">{week_label}</a>'
+        week_start = week_start_date + timedelta(days=i * 7)
+        week_label = f"Week of {week_start.strftime('%B %d')}"
+        active_class = "active" if i == 0 else ""
+        week_navigation += f'<button class="nav-button {active_class}" onclick="showWeek({i})">{week_label}</button>'
 
-    html_content += """
+    # Generate week sections
+    week_sections = ""
+    for i, week_key in enumerate(sorted_weeks):
+        week_start = week_start_date + timedelta(days=i * 7)
+        week_end = week_start + timedelta(days=6)
+        week_label = f"Week of {week_start.strftime('%B %d, %Y')}"
+        
+        active_class = "active" if i == 0 else ""
+        week_sections += f'<div id="week-{i}" class="week-section {active_class}">'
+        week_sections += f'''
+            <div class="week-header">
+                <h2>{week_label}</h2>
+                <p>{week_start.strftime('%B %d')} - {week_end.strftime('%B %d, %Y')}</p>
             </div>
-    """
-
-    # Generate weekly sections
-    for i, week_key in enumerate(sorted_weeks):
-        week_number = int(week_key.split('_')[1])
-        content_week_start = week_start_date + timedelta(days=week_number * 7)
-        content_week_end = content_week_start + timedelta(days=6)
+            <div class="events-grid">
+        '''
         
-        # Create week label
-        week_label = f"Week of {content_week_start.strftime('%B %d')}, {content_week_start.year}"
+        # Get all events for this week
+        week_events = []
+        for day in range(1, 8):
+            week_events.extend(events_by_week[week_key][day])
         
-        week_id = f"week-{i}"
-
-        # Add 'active' class to the first week
-        active_class = " active" if i == 0 else ""
-
-        html_content += f"""
-            <div id="{week_id}" class="week-section{active_class}">
-                <h2 class="text-3xl font-bold text-center text-gray-800 mb-6">{week_label}</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        """
+        if week_events:
+            for event in week_events:
+                borough_class = get_borough_class(event["borough"])
+                week_sections += generate_event_card(event, borough_class)
+        else:
+            week_sections += '<p class="no-events">No events scheduled for this week</p>'
         
-        # Iterate through days of the week (Monday=1 to Sunday=7)
-        for weekday_num in range(1, 8):
-            current_day_date = content_week_start + timedelta(days=weekday_num - 1)
-            # Only show days that are in July
-            if start_july <= current_day_date <= end_july:
-                day_name = current_day_date.strftime("%A, %B %d")
-                events_for_day = sorted(events_by_week.get(week_key, {}).get(weekday_num, []),
-                                         key=lambda x: x["time"] if x["time"] != "TBD (likely daytime)" and x["time"] != "TBD (likely evening)" and x["time"] != "TBD (morning/afternoon)" else "ZZZ")
-                
-                html_content += f"""
-                    <div class="day-card">
-                        <div class="day-header">{day_name}</div>
-                """
-                if events_for_day:
-                    for event in events_for_day:
-                        borough_class = event["borough"].lower().replace(" ", "-").replace("(", "").replace(")", "").replace(",", "")
-                        html_content += f"""
-                            <div class="event-card borough-{borough_class}">
-                                <div class="event-title">{event["name"]}</div>
-                                <div class="event-detail"><strong>Time:</strong> {event["time"]}</div>
-                                <div class="event-detail"><strong>Address:</strong> {event["address"]}</div>
-                                <div class="event-detail"><strong>Borough/Area:</strong> {event["borough"]}</div>
-                                <div class="event-detail"><strong>Link:</strong> <a href="{event["link"]}" target="_blank" class="event-link">{event["link"]}</a></div>
-                            </div>
-                        """
-                else:
-                    html_content += """
-                        <p class="text-gray-500 text-sm italic">No events scheduled for this day.</p>
-                    """
-                html_content += """
-                    </div>
-                """
+        week_sections += '</div></div>'
+
+    # Generate borough sections
+    borough_sections = ""
+    borough_buttons = ""
+    
+    borough_configs = {
+        "Manhattan": {"class": "manhattan", "color": "#ff6b6b"},
+        "Brooklyn": {"class": "brooklyn", "color": "#4ecdc4"},
+        "Queens": {"class": "queens", "color": "#45b7d1"},
+        "The Bronx": {"class": "bronx", "color": "#feca57"},
+        "Staten Island": {"class": "staten-island", "color": "#a8e6cf"},
+        "Asbury Park, NJ": {"class": "asbury-park", "color": "#d1ecf1"}
+    }
+    
+    for borough, config in borough_configs.items():
+        if borough in events_by_borough:
+            borough_class = config["class"]
+            active_class = "active" if borough == "Manhattan" else ""
             
-        html_content += """
+            # Borough navigation button
+            borough_buttons += f'<button class="borough-button {borough_class} {active_class}" onclick="showBorough(\'{borough_class}\')">{borough}</button>'
+            
+            # Borough section
+            borough_sections += f'<div id="borough-{borough_class}" class="borough-section {active_class}">'
+            borough_sections += f'''
+                <div class="week-header">
+                    <h2>{borough} Events</h2>
+                    <p>All free events in {borough} for July 2025</p>
+                </div>
+                <div class="events-grid">
+            '''
+            
+            # Sort events by date
+            borough_events = sorted(events_by_borough[borough], key=lambda x: x["date"])
+            
+            if borough_events:
+                for event in borough_events:
+                    borough_sections += generate_event_card(event, borough_class)
+            else:
+                borough_sections += f'<p class="no-events">No events scheduled for {borough}</p>'
+            
+            borough_sections += '</div></div>'
+
+    # Generate the HTML content
+    html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Free Events Calendar - July 2025</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }}
+        
+        .container {{
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        
+        .header {{
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }}
+        
+        .header h1 {{
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }}
+        
+        .header p {{
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }}
+        
+        .nav-section {{
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }}
+        
+        .nav-section h3 {{
+            text-align: center;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.3rem;
+        }}
+        
+        .week-nav {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }}
+        
+        .borough-nav {{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }}
+        
+        .nav-button {{
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 120px;
+        }}
+        
+        .nav-button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }}
+        
+        .nav-button.active {{
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.05);
+        }}
+        
+        .borough-button {{
+            padding: 10px 16px;
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            min-width: 100px;
+            font-size: 0.9rem;
+        }}
+        
+        .borough-button.manhattan {{ background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }}
+        .borough-button.brooklyn {{ background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%); }}
+        .borough-button.queens {{ background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%); }}
+        .borough-button.bronx {{ background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%); }}
+        .borough-button.staten-island {{ background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%); color: #333; }}
+        .borough-button.asbury-park {{ background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%); color: #333; }}
+        
+        .borough-button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }}
+        
+        .borough-button.active {{
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }}
+        
+        .content-section {{
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }}
+        
+        .week-section {{
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }}
+        
+        .week-section.active {{
+            display: block;
+        }}
+        
+        .borough-section {{
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }}
+        
+        .borough-section.active {{
+            display: block;
+        }}
+        
+        .week-header {{
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }}
+        
+        .week-header h2 {{
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }}
+        
+        .week-header p {{
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }}
+        
+        .events-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }}
+        
+        .event-card {{
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border-left: 6px solid #ddd;
+            position: relative;
+            overflow: hidden;
+        }}
+        
+        .event-card:hover {{
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }}
+        
+        .event-card.manhattan {{ border-left-color: #ff6b6b; }}
+        .event-card.brooklyn {{ border-left-color: #4ecdc4; }}
+        .event-card.queens {{ border-left-color: #45b7d1; }}
+        .event-card.bronx {{ border-left-color: #feca57; }}
+        .event-card.staten-island {{ border-left-color: #a8e6cf; }}
+        .event-card.asbury-park {{ border-left-color: #d1ecf1; }}
+        
+        .event-name {{
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }}
+        
+        .event-details {{
+            margin-bottom: 15px;
+        }}
+        
+        .event-detail {{
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }}
+        
+        .event-detail i {{
+            width: 20px;
+            margin-right: 10px;
+            color: #7f8c8d;
+        }}
+        
+        .event-date {{
+            font-weight: 600;
+            color: #e74c3c;
+        }}
+        
+        .event-time {{
+            font-weight: 600;
+            color: #3498db;
+        }}
+        
+        .event-address {{
+            color: #7f8c8d;
+            font-style: italic;
+        }}
+        
+        .event-borough {{
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }}
+        
+        .event-borough.manhattan {{ background: #ff6b6b; color: white; }}
+        .event-borough.brooklyn {{ background: #4ecdc4; color: white; }}
+        .event-borough.queens {{ background: #45b7d1; color: white; }}
+        .event-borough.bronx {{ background: #feca57; color: #333; }}
+        .event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
+        .event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
+        
+        .event-link {{
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }}
+        
+        .event-link:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }}
+        
+        .no-events {{
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            font-style: italic;
+        }}
+        
+        .view-toggle {{
+            text-align: center;
+            margin-bottom: 20px;
+        }}
+        
+        .toggle-button {{
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            color: #333;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }}
+        
+        .toggle-button.active {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }}
+        
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(20px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
+        }}
+        
+        @media (max-width: 768px) {{
+            .container {{
+                padding: 10px;
+            }}
+            
+            .header h1 {{
+                font-size: 2rem;
+            }}
+            
+            .events-grid {{
+                grid-template-columns: 1fr;
+            }}
+            
+            .week-nav, .borough-nav {{
+                justify-content: center;
+            }}
+            
+            .nav-button, .borough-button {{
+                min-width: auto;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗽 NYC Free Events Calendar</h1>
+            <p>July 2025 • Discover Free Events Across All Boroughs</p>
+        </div>
+        
+        <div class="nav-section">
+            <h3>📅 Browse by Week</h3>
+            <div class="week-nav">
+                {week_navigation}
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <h3>🗺️ Browse by Destination</h3>
+            <div class="borough-nav">
+                {borough_buttons}
+            </div>
+        </div>
+        
+        <div class="view-toggle">
+            <button class="toggle-button active" onclick="toggleView('week')">📅 Week View</button>
+            <button class="toggle-button" onclick="toggleView('borough')">🗺️ Destination View</button>
+        </div>
+        
+        <!-- Week View -->
+        <div id="week-view" class="content-section">
+            {week_sections}
+        </div>
+        
+        <!-- Borough View -->
+        <div id="borough-view" class="content-section" style="display: none;">
+            {borough_sections}
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'week';
+        let currentBorough = 'manhattan';
+        
+        function showWeek(weekIndex) {{
+            // Hide all week sections
+            document.querySelectorAll('.week-section').forEach(section => {{
+                section.classList.remove('active');
+            }});
+            
+            // Show selected week section
+            document.getElementById(`week-${{weekIndex}}`).classList.add('active');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-button').forEach(button => {{
+                button.classList.remove('active');
+            }});
+            event.target.classList.add('active');
+        }}
+        
+        function showBorough(borough) {{
+            currentBorough = borough;
+            
+            // Hide all borough sections
+            document.querySelectorAll('.borough-section').forEach(section => {{
+                section.classList.remove('active');
+            }});
+            
+            // Show selected borough section
+            document.getElementById(`borough-${{borough}}`).classList.add('active');
+            
+            // Update navigation buttons
+            document.querySelectorAll('.borough-button').forEach(button => {{
+                button.classList.remove('active');
+            }});
+            event.target.classList.add('active');
+            
+            // Switch to borough view if not already there
+            if (currentView !== 'borough') {{
+                toggleView('borough');
+            }}
+        }}
+        
+        function toggleView(view) {{
+            currentView = view;
+            
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-button').forEach(button => {{
+                button.classList.remove('active');
+            }});
+            event.target.classList.add('active');
+            
+            // Show/hide appropriate view
+            if (view === 'week') {{
+                document.getElementById('week-view').style.display = 'block';
+                document.getElementById('borough-view').style.display = 'none';
+            }} else {{
+                document.getElementById('week-view').style.display = 'none';
+                document.getElementById('borough-view').style.display = 'block';
+            }}
+        }}
+        
+        // Initialize with first week active
+        document.addEventListener('DOMContentLoaded', function() {{
+            showWeek(0);
+            showBorough('manhattan');
+        }});
+    </script>
+</body>
+</html>
+"""
+
+    # Write the HTML content to the file
+    with open(output_filename, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+    
+    print(f"HTML calendar generated successfully: {os.path.abspath(output_filename)}")
+    print("You can open 'nyc_events_calendar.html' in your web browser to view it.")
+
+def get_borough_class(borough):
+    """Convert borough name to CSS class name."""
+    borough_mapping = {
+        "Manhattan": "manhattan",
+        "Brooklyn": "brooklyn", 
+        "Queens": "queens",
+        "The Bronx": "bronx",
+        "Staten Island": "staten-island",
+        "Asbury Park, NJ": "asbury-park"
+    }
+    return borough_mapping.get(borough, "other")
+
+def generate_event_card(event, borough_class):
+    """Generate HTML for a single event card."""
+    # Format the date - handle date ranges by using the start date
+    date_str = event["date"]
+    if " to " in date_str:
+        # For date ranges, use the start date
+        date_str = date_str.split(" to ")[0]
+    
+    event_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    formatted_date = event_date.strftime("%A, %B %d")
+    
+    # If it's a date range, show that in the display
+    if " to " in event["date"]:
+        end_date_str = event["date"].split(" to ")[1]
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        formatted_date = f"{formatted_date} - {end_date.strftime('%B %d')}"
+    
+    return f"""
+        <div class="event-card {borough_class}">
+            <div class="event-name">{event['name']}</div>
+            <div class="event-details">
+                <div class="event-detail">
+                    <i>📅</i>
+                    <span class="event-date">{formatted_date}</span>
+                </div>
+                <div class="event-detail">
+                    <i>🕒</i>
+                    <span class="event-time">{event['time']}</span>
+                </div>
+                <div class="event-detail">
+                    <i>📍</i>
+                    <span class="event-address">{event['address']}</span>
                 </div>
             </div>
-        """
-
-    html_content += """
+            <span class="event-borough {borough_class}">{event['borough']}</span>
+            <a href="{event['link']}" target="_blank" rel="noopener noreferrer" class="event-link">
+                More Info
+            </a>
         </div>
-    </body>
-    </html>
     """
-
-    # Write the generated HTML content to a file
-    try:
-        with open(output_filename, "w", encoding="utf-8") as f:
-            f.write(html_content)
-        print(f"HTML calendar generated successfully: {os.path.abspath(output_filename)}")
-        print(f"You can open '{output_filename}' in your web browser to view it.")
-    except IOError as e:
-        print(f"Error writing HTML file: {e}")
 
 # --- Execute the HTML generation ---
 if __name__ == "__main__":
