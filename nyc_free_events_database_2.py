@@ -3,7 +3,10 @@
 # including navigation between weeks and color-coding by borough.
 
 import os
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, time
+import re
+from collections import defaultdict
+import calendar
 
 # --- Your NYC Free Events Database ---
 # This database contains free events for July 2025,
@@ -1670,106 +1673,135 @@ def format_date(date_str):
         return date_obj.strftime('%B %d, %Y')
 
 def generate_event_card(event):
-    """Generate HTML for an event card"""
-    borough_class = get_borough_class(event['borough'])
-    return f"""
-        <div class="event-card {borough_class}">
-            <div class="event-header">
-                <div>
-                    <div class="event-title">{event['name']}</div>
-                </div>
-                <div class="event-date">{format_date(event['date'])}</div>
-            </div>
-            <div class="event-details">
-                <div class="event-detail">
-                    <i>🕒</i>
-                    <span>{event['time']}</span>
-                </div>
-                <div class="event-detail">
-                    <i>📍</i>
-                    <span>{event['address']}</span>
-                </div>
-            </div>
-            <div class="event-description">Free event in {event['borough']}</div>
-            <div class="event-borough {borough_class}">{event['borough']}</div>
-        </div>
     """
+    FIXED VERSION: Eliminates duplicate address display.
+    Address now only appears in the location field, not in description.
+    """
+    name = event.get('name', 'Untitled Event')
+    time_str = event.get('time', 'Time TBD')
+    address = event.get('address', 'Location TBD')
+    borough = event.get('borough', 'NYC')
+    
+    # FIXED: Create description without duplicate address
+    # Instead of showing address again, show borough-based description
+    description = f"Free event in {borough}"
+    
+    # If there's additional description content that's NOT the address, use it
+    original_description = event.get('description', '')
+    if original_description and original_description.strip() != address.strip():
+        description = original_description
+    
+    # Generate the event card HTML (adjust based on your existing HTML structure)
+    card_html = f'''
+    <div class="event-card" data-borough="{borough.lower()}">
+        <div class="event-time">{time_str}</div>
+        <div class="event-name">{name}</div>
+        <div class="event-location">{address}</div>
+        <div class="event-description">{description}</div>
+    </div>
+    '''
+    
+    return card_html
 
-def create_calendar_grid(week_events, week_start):
-    """Create a calendar grid for a week starting on the first of the month"""
-    days_of_week = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+def parse_time_for_sorting(time_str):
+    """
+    Parse various time formats for sorting events chronologically.
+    Returns a time object that can be used for sorting.
+    """
+    if not time_str or time_str.strip() == "":
+        return time(23, 59)  # Put empty times at end of day
     
-    # Create calendar grid HTML
-    calendar_html = '<div class="calendar-grid">'
+    time_str = time_str.strip().upper()
     
-    # Add day headers
-    for day_name in days_of_week:
-        calendar_html += f'<div class="calendar-day-header">{day_name}</div>'
-    
-    # Get the week's dates
-    week_dates = []
-    for i in range(7):
-        current_date = week_start + timedelta(days=i)
-        week_dates.append(current_date)
-    
-    # Create calendar days
-    for date in week_dates:
-        day_events = [event for event in week_events if event['date'] == date.strftime('%Y-%m-%d')]
-        
-        # Sort events by time (convert time to sortable format)
-        def get_time_sort_key(event):
-            time_str = event['time']
-            # Handle TBD times by putting them at the end
-            if 'TBD' in time_str or 'likely' in time_str.lower():
-                return '23:59'
-            # Extract start time
-            time_parts = time_str.split('–')[0].strip()
-            # Convert to 24-hour format for sorting
-            if 'PM' in time_parts and '12:' not in time_parts:
-                hour = int(time_parts.split(':')[0]) + 12
-                minute = int(time_parts.split(':')[1].split()[0])
-            elif 'AM' in time_parts and '12:' in time_parts:
-                hour = 0
-                minute = int(time_parts.split(':')[1].split()[0])
-            elif 'AM' in time_parts:
-                hour = int(time_parts.split(':')[0])
-                minute = int(time_parts.split(':')[1].split()[0])
-            else:
-                hour = int(time_parts.split(':')[0])
-                minute = int(time_parts.split(':')[1].split()[0])
-            return f"{hour:02d}:{minute:02d}"
-        
-        # Sort events by time
-        day_events.sort(key=get_time_sort_key)
-        
-        # Check if this date is in the current month
-        is_current_month = date.month == 7  # July 2025
-        
-        calendar_html += f'<div class="calendar-day{" empty" if not is_current_month else ""}">'
-        calendar_html += f'<div class="day-number">{date.day}</div>'
-        
-        if day_events and is_current_month:
-            calendar_html += '<div class="day-events">'
-            for event in day_events:
-                borough_class = get_borough_class(event['borough'])
-                # Show event name and time in a compact format
-                event_name_short = event['name'][:20] + ("..." if len(event['name']) > 20 else "")
-                time_short = event['time'].split('–')[0].strip() if '–' in event['time'] else event['time'][:8]
-                
-                calendar_html += f'''
-                    <div class="day-event {borough_class}" onclick="showEventDetails('{event['name']}', '{event['date']}', '{event['time']}', '{event['address']}', '{event['borough']}', 'Free event in {event['borough']}')">
-                        <div class="day-event-name">{event_name_short}</div>
-                        <div class="day-event-time">{time_short}</div>
-                        <div class="day-event-borough {borough_class}">{event['borough'][:3]}</div>
-                    </div>
-                '''
-            calendar_html += '</div>'
+    # Handle TBD cases with intelligent defaults
+    if "TBD" in time_str:
+        if "MORNING" in time_str:
+            return time(9, 0)
+        elif "AFTERNOON" in time_str:
+            return time(14, 0)
+        elif "EVENING" in time_str:
+            return time(19, 0)
         else:
-            calendar_html += '<div class="day-events"></div>'
-        
-        calendar_html += '</div>'
+            return time(12, 0)  # Default noon for generic TBD
     
-    calendar_html += '</div>'
+    # Handle all-day events
+    if "ALL DAY" in time_str:
+        return time(0, 0)  # Show all-day events first
+    
+    # Parse time ranges - extract start time
+    # Format: "7:00 PM – 8:30 PM" or "7:00 PM - 8:30 PM"
+    time_match = re.search(r'(\d{1,2}):(\d{2})\s*(AM|PM)', time_str)
+    if time_match:
+        hours = int(time_match.group(1))
+        minutes = int(time_match.group(2))
+        am_pm = time_match.group(3)
+        
+        # Convert to 24-hour format
+        if am_pm == 'PM' and hours != 12:
+            hours += 12
+        elif am_pm == 'AM' and hours == 12:
+            hours = 0
+            
+        return time(hours, minutes)
+    
+    # Handle 24-hour format (e.g., "19:00")
+    time_24h_match = re.search(r'(\d{1,2}):(\d{2})', time_str)
+    if time_24h_match:
+        hours = int(time_24h_match.group(1))
+        minutes = int(time_24h_match.group(2))
+        return time(hours, minutes)
+    
+    # Default fallback for unparseable times
+    return time(23, 59)
+
+def create_calendar_grid(events_data, year, month):
+    """
+    UPDATED VERSION: Sorts events by time within each day.
+    """
+    # Group events by date
+    events_by_date = defaultdict(list)
+    
+    for event in events_data:
+        event_date = event.get('date')
+        if event_date:
+            try:
+                # Parse the date (adjust based on your date format)
+                if isinstance(event_date, str):
+                    # Assuming format like '2025-07-15' or similar
+                    date_parts = event_date.split('-')
+                    if len(date_parts) == 3:
+                        event_year, event_month, event_day = map(int, date_parts)
+                        if event_year == year and event_month == month:
+                            events_by_date[event_day].append(event)
+            except (ValueError, AttributeError):
+                continue
+    
+    # FIXED: Sort events within each day by time
+    for day, day_events in events_by_date.items():
+        day_events.sort(key=lambda e: parse_time_for_sorting(e.get('time', '')))
+    
+    # Example of how the day rendering would work:
+    calendar_html = ""
+    cal = calendar.Calendar(firstweekday=6)  # Start with Sunday
+    month_days = cal.monthdayscalendar(year, month)
+    
+    for week in month_days:
+        for day in week:
+            if day == 0:
+                calendar_html += '<div class="calendar-day empty"></div>'
+            else:
+                # Get sorted events for this day
+                day_events = events_by_date.get(day, [])
+                
+                calendar_html += f'<div class="calendar-day">'
+                calendar_html += f'<div class="day-number">{day}</div>'
+                
+                # Add sorted events
+                for event in day_events:  # These are now sorted by time!
+                    calendar_html += generate_event_card(event)
+                
+                calendar_html += '</div>'
+    
     return calendar_html
 
 def generate_html():
@@ -2332,7 +2364,7 @@ def generate_html():
                         <h2>Week of {week_start.strftime('%B %d')}</h2>
                         <p>{week_start.strftime('%B %d')} - {week_end.strftime('%B %d, %Y')}</p>
                     </div>
-                    {create_calendar_grid(week_events, week_start)}
+                    {create_calendar_grid(week_events, week_start.year, week_start.month)}
                 </div>
         """
     
