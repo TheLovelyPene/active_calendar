@@ -474,18 +474,23 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     # Group events by week
     events_by_week = {}
 
-    # Calculate all ISO weeks for July 2025
+    # Start from the Monday of the week containing July 1st
+    # July 1st, 2025 is a Tuesday, so the week starts Monday June 30th
     start_july = date(2025, 7, 1)
     end_july = date(2025, 7, 31)
-
-    # Start from July 1st and create weekly chunks
-    current_date = start_july
+    
+    # Find the Monday of the week containing July 1st
+    days_since_monday = start_july.weekday()  # 0=Monday, 1=Tuesday, etc.
+    week_start_date = start_july - timedelta(days=days_since_monday)  # This gives us Monday June 30th
+    
+    # Create weekly chunks starting from the Monday of the week containing July 1st
+    current_date = week_start_date
     week_number = 0
     
     while current_date <= end_july:
         # Create a week starting from current_date
         week_start = current_date
-        week_end = min(current_date + timedelta(days=6), end_july)
+        week_end = current_date + timedelta(days=6)
         
         # Create a unique week identifier
         week_key = f"week_{week_number}"
@@ -510,7 +515,8 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             current_event_date = start_event_date
             while current_event_date <= end_event_date:
                 # Find which week this date belongs to
-                week_index = (current_event_date - start_july).days // 7
+                days_since_week_start = (current_event_date - week_start_date).days
+                week_index = days_since_week_start // 7
                 week_key = f"week_{week_index}"
                 
                 if week_key in events_by_week:
@@ -523,7 +529,8 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         else:
             event_date = datetime.strptime(event["date"], "%Y-%m-%d").date()
             # Find which week this date belongs to
-            week_index = (event_date - start_july).days // 7
+            days_since_week_start = (event_date - week_start_date).days
+            week_index = days_since_week_start // 7
             week_key = f"week_{week_index}"
             
             if week_key in events_by_week:
@@ -645,14 +652,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     # Add navigation links
     for i, week_key in enumerate(sorted_weeks):
         week_number = int(week_key.split('_')[1])
-        week_start_date = start_july + timedelta(days=week_number * 7)
-        week_end_date = min(week_start_date + timedelta(days=6), end_july)
+        nav_week_start = week_start_date + timedelta(days=week_number * 7)
+        nav_week_end = nav_week_start + timedelta(days=6)
         
         # Create week label
-        if week_number == 0:
-            week_label = f"Week of July 1-7, 2025"
-        else:
-            week_label = f"Week of July {week_start_date.day}-{week_end_date.day}, 2025"
+        week_label = f"Week of {nav_week_start.strftime('%B %d')}, {nav_week_start.year}"
         
         week_id = f"week-{i}"
         html_content += f'<a href="#{week_id}">{week_label}</a>'
@@ -664,14 +668,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
     # Generate weekly sections
     for i, week_key in enumerate(sorted_weeks):
         week_number = int(week_key.split('_')[1])
-        week_start_date = start_july + timedelta(days=week_number * 7)
-        week_end_date = min(week_start_date + timedelta(days=6), end_july)
+        content_week_start = week_start_date + timedelta(days=week_number * 7)
+        content_week_end = content_week_start + timedelta(days=6)
         
         # Create week label
-        if week_number == 0:
-            week_label = f"Week of July 1-7, 2025"
-        else:
-            week_label = f"Week of July {week_start_date.day}-{week_end_date.day}, 2025"
+        week_label = f"Week of {content_week_start.strftime('%B %d')}, {content_week_start.year}"
         
         week_id = f"week-{i}"
 
@@ -683,7 +684,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         
         # Iterate through days of the week (Monday=1 to Sunday=7)
         for weekday_num in range(1, 8):
-            current_day_date = week_start_date + timedelta(days=weekday_num - 1)
+            current_day_date = content_week_start + timedelta(days=weekday_num - 1)
             # Only show days that are in July
             if start_july <= current_day_date <= end_july:
                 day_name = current_day_date.strftime("%A, %B %d")
