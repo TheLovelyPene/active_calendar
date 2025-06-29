@@ -1751,6 +1751,21 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+        /* Remove old .weekly-calendar-grid styles if present */
+        /* Responsive scroll for table */
+        .weekly-calendar-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .weekly-calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #f8f9fa;
+            font-size: 0.9rem;
+            min-width: 900px;
+        }
+        /* ...rest of .weekly-calendar-table CSS as before... */
     </style>
 </head>
 <body>
