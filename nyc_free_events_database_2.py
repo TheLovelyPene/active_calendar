@@ -330,11 +330,11 @@ nyc_free_events_database = [
     },
     {
         "name": "BRIC Celebrate Brooklyn! (A Tribute to Quincy Jones: The Wiz)",
-        "date": "2025-07-27",
-        "time": "TBD (likely evening)",
-        "address": "Lena Horne Bandshell (Prospect Park), Brooklyn",
+        "date": "2025-07-26",
+        "time": "Doors 6:00 PM / Show 7:00 PM",
+        "address": "Lena Horne Bandshell, Prospect Park West, Brooklyn, NY",
         "borough": "Brooklyn",
-        "link": "https://bricartsmedia.org/celebrate-brooklyn/"
+        "link": "https://bricartsmedia.org/event/the-wiz/"
     },
     {
         "name": "Bats! Night Walk",
@@ -343,6 +343,22 @@ nyc_free_events_database = [
         "address": "Seba Playground, Seba Ave & Gerritsen Ave (Marine Park), Brooklyn",
         "borough": "Brooklyn",
         "link": "https://www.reddit.com/r/nyc/comments/1li14mo/things-to-do-in-nyc-july-2025/"
+    },
+    {
+        "name": "BRIC Celebrate Brooklyn! at Brower Park",
+        "date": "2025-07-19",
+        "time": "4:00 PM – 7:15 PM",
+        "address": "Park Place between Brooklyn Ave & Kingston Ave, Brooklyn, NY",
+        "borough": "Brooklyn",
+        "link": "https://bricartsmedia.org/event/bric-celebrate-brooklyn-at-brower-park-2025"
+    },
+    {
+        "name": "A Tribute to Quincy Jones: The Wiz",
+        "date": "2025-07-26",
+        "time": "Doors 6:00 PM / Show 7:00 PM",
+        "address": "Lena Horne Bandshell, Prospect Park West, Brooklyn, NY",
+        "borough": "Brooklyn",
+        "link": "https://bricartsmedia.org/event/the-wiz/"
     },
 
     # --- Queens Events ---
@@ -2272,6 +2288,8 @@ def generate_html():
                 display: flex;
                 flex-wrap: wrap;
                 gap: 10px;
+                justify-content: center;
+                margin-bottom: 20px;
             }}
             
             .borough-button {{
