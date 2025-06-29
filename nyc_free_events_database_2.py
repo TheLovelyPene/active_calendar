@@ -488,6 +488,22 @@ nyc_free_events_database = [
         "borough": "Asbury Park, NJ",
         "link": "https://www.njfamily.com/events/asbury-park-spring-bazaar-2025/2025-07-17/"
     },
+    {
+        "name": "Independence Day Fireworks",
+        "date": "2025-07-03",
+        "time": "9:00 PM",
+        "address": "Boardwalk & Waterfront, Asbury Park, NJ",
+        "borough": "Asbury Park",
+        "link": "https://www.cityofasburypark.com/CivicAlerts.aspx?AID=2450"
+    },
+    {
+        "name": "Shoreline Social Club Trivia Night",
+        "date": "2025-07-10",
+        "time": "7:00 PM – 9:00 PM",
+        "address": "Shoreline Social Club, Asbury Park, NJ",
+        "borough": "Asbury Park",
+        "link": ""
+    },
 
     # --- Staten Island Events ---
     {
