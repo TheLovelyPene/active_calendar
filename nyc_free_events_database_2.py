@@ -1654,10 +1654,17 @@ def get_borough_class(borough):
         return 'other'
 
 def is_event_in_week(event, week_start):
-    """Check if an event falls within a given week"""
-    event_date = datetime.strptime(event['date'], '%Y-%m-%d').date()
+    """Check if an event falls within a given week, supporting date ranges."""
+    date_str = event['date']
     week_end = week_start + timedelta(days=6)
-    return week_start <= event_date <= week_end
+    if ' to ' in date_str:
+        start_date_str, end_date_str = date_str.split(' to ')
+        event_start = datetime.strptime(start_date_str.strip(), '%Y-%m-%d').date()
+        event_end = datetime.strptime(end_date_str.strip(), '%Y-%m-%d').date()
+        return (event_start <= week_end) and (event_end >= week_start)
+    else:
+        event_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+        return week_start <= event_date <= week_end
 
 def format_date(date_str):
     """Format date string for display"""
@@ -1674,16 +1681,18 @@ def format_date(date_str):
 
 def generate_event_card(event):
     """
-    FIXED VERSION: Eliminates duplicate address display.
-    Address now only appears in the location field, not in description.
+    Generate event card with borough color coding and More Info links.
     """
     name = event.get('name', 'Untitled Event')
     time_str = event.get('time', 'Time TBD')
     address = event.get('address', 'Location TBD')
     borough = event.get('borough', 'NYC')
+    link = event.get('link', '')
     
-    # FIXED: Create description without duplicate address
-    # Instead of showing address again, show borough-based description
+    # Get borough class for color coding
+    borough_class = get_borough_class(borough)
+    
+    # Create description without duplicate address
     description = f"Free event in {borough}"
     
     # If there's additional description content that's NOT the address, use it
@@ -1691,15 +1700,20 @@ def generate_event_card(event):
     if original_description and original_description.strip() != address.strip():
         description = original_description
     
-    # Generate the event card HTML (adjust based on your existing HTML structure)
+    # Generate the event card HTML with borough class and link
     card_html = f'''
-    <div class="event-card" data-borough="{borough.lower()}">
+    <div class="event-card {borough_class}" data-borough="{borough.lower()}">
         <div class="event-time">{time_str}</div>
         <div class="event-name">{name}</div>
         <div class="event-location">{address}</div>
         <div class="event-description">{description}</div>
-    </div>
     '''
+    
+    # Add link if available
+    if link:
+        card_html += f'<div class="event-link"><a href="{link}" target="_blank">More Info</a></div>'
+    
+    card_html += '</div>'
     
     return card_html
 
@@ -2384,28 +2398,7 @@ def generate_html():
         
         for event in borough_events:
             borough_class = get_borough_class(event['borough'])
-            html_content += f"""
-                        <div class="event-card {borough_class}">
-                            <div class="event-header">
-                                <div>
-                                    <div class="event-title">{event['name']}</div>
-                                </div>
-                                <div class="event-date">{format_date(event['date'])}</div>
-                            </div>
-                            <div class="event-details">
-                                <div class="event-detail">
-                                    <i>🕒</i>
-                                    <span>{event['time']}</span>
-                                </div>
-                                <div class="event-detail">
-                                    <i>📍</i>
-                                    <span>{event['address']}</span>
-                                </div>
-                            </div>
-                            <div class="event-description">{event['address']}</div>
-                            <div class="event-borough {borough_class}">{event['borough']}</div>
-                        </div>
-            """
+            html_content += generate_event_card(event)
         
         html_content += """
                     </div>
@@ -2516,8 +2509,14 @@ X-WR-CALDESC:Free events across NYC boroughs and Asbury Park
 """
     
     for event in events:
-        # Parse date and time
-        event_date = datetime.strptime(event['date'], '%Y-%m-%d')
+        # Parse date and time - handle date ranges by using the start date
+        date_str = event['date']
+        if " to " in date_str:
+            # Extract start date from range
+            start_date_str = date_str.split(" to ")[0].strip()
+            event_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        else:
+            event_date = datetime.strptime(date_str, '%Y-%m-%d')
         
         # Create event start time (default to 7 PM if time is TBD)
         time_str = event['time']
@@ -2574,4 +2573,12 @@ END:VEVENT
 
 # --- Execute the HTML generation ---
 if __name__ == "__main__":
-    generate_weekly_events_html(nyc_free_events_database)
+    # Generate the calendar grid layout
+    html_content = generate_html()
+    
+    # Write to file
+    with open("nyc_events_calendar.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    
+    print("HTML calendar generated successfully: /Users/penny/Desktop/Jobs/Pursuit/NYC Events/active_calendar/nyc_events_calendar.html")
+    print("You can open 'nyc_events_calendar.html' in your web browser to view it.")
