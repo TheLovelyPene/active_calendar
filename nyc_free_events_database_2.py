@@ -1919,9 +1919,9 @@ def parse_time_for_sorting(time_str):
     # Default fallback for unparseable times
     return time(23, 59)
 
-def create_calendar_grid(events_data, year, month):
+def create_calendar_grid(events_data, year, month, week_start):
     """
-    NEW VERSION: Weekly time-based grid layout with dates 1-7 across top and time slots on left.
+    NEW VERSION: Weekly time-based grid layout with actual dates across top and time slots on left.
     TBD events go in morning slot with bold TBD text.
     """
     # Define time slots
@@ -1981,11 +1981,17 @@ def create_calendar_grid(events_data, year, month):
     # Generate the weekly grid HTML
     calendar_html = '<div class="weekly-calendar-grid">'
     
-    # Header row with dates
+    # Header row with actual dates for this week
     calendar_html += '<div class="calendar-header">'
     calendar_html += '<div class="time-slot-header">Time</div>'
-    for day in range(1, 8):
-        calendar_html += f'<div class="date-header">{day}</div>'
+    
+    # Show actual dates for this week (7 days starting from week_start)
+    for i in range(7):
+        current_date = week_start + timedelta(days=i)
+        day_number = current_date.day
+        day_name = current_date.strftime('%a')  # Mon, Tue, etc.
+        calendar_html += f'<div class="date-header">{day_name}<br>{day_number}</div>'
+    
     calendar_html += '</div>'
     
     # Time slot rows
@@ -1993,8 +1999,11 @@ def create_calendar_grid(events_data, year, month):
         calendar_html += '<div class="time-row">'
         calendar_html += f'<div class="time-slot-label">{time_label}</div>'
         
-        for day in range(1, 8):
-            day_events = events_by_date.get(day, {}).get(time_slot, [])
+        # Show events for each day of this week
+        for i in range(7):
+            current_date = week_start + timedelta(days=i)
+            day_number = current_date.day
+            day_events = events_by_date.get(day_number, {}).get(time_slot, [])
             
             if day_events:
                 calendar_html += '<div class="day-cell with-events">'
@@ -2580,7 +2589,7 @@ def generate_html():
                         <h2>Week of {week_start.strftime('%B %d')}</h2>
                         <p>{week_start.strftime('%B %d')} - {week_end.strftime('%B %d, %Y')}</p>
                     </div>
-                    {create_calendar_grid(week_events, week_start.year, week_start.month)}
+                    {create_calendar_grid(week_events, week_start.year, week_start.month, week_start)}
                 </div>
         """
     
