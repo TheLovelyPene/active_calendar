@@ -2019,16 +2019,10 @@ def parse_time_for_sorting(time_str):
 
 def create_calendar_grid(events_data, year, month, week_start):
     """
-    Table-based weekly time grid: header row is days, first column is time slots, events in correct cells.
+    Table-based weekly time grid: header row is days, first column is hours (5am-11pm), TBD row at top.
     """
-    time_slots = [
-        ("TBD", "TBD Events"),
-        ("9AM-12PM", "Morning"),
-        ("12PM-3PM", "Afternoon"),
-        ("3PM-6PM", "Late Afternoon"),
-        ("6PM-9PM", "Evening"),
-        ("9PM+", "Night")
-    ]
+    # Time slots: TBD, then 5am to 11pm
+    time_slots = [("TBD", "TBD")] + [(f"{h:02d}:00", f"{h % 12 or 12}{'am' if h < 12 else 'pm'}") for h in range(5, 24)]
     events_by_date = defaultdict(lambda: defaultdict(list))
     for event in events_data:
         event_date = event.get('date')
@@ -2040,35 +2034,26 @@ def create_calendar_grid(events_data, year, month, week_start):
                         event_year, event_month, event_day = map(int, date_parts)
                         if event_year == year and event_month == month:
                             time_str = event.get('time', 'TBD')
-                            if 'TBD' in time_str or 'likely' in time_str.lower():
-                                time_slot = "TBD"
-                            elif 'AM' in time_str:
-                                hour = int(time_str.split(':')[0])
-                                if hour < 9:
-                                    time_slot = "TBD"
-                                elif hour < 12:
-                                    time_slot = "9AM-12PM"
-                                else:
-                                    time_slot = "12PM-3PM"
-                            elif 'PM' in time_str:
-                                hour = int(time_str.split(':')[0])
-                                if hour == 12:
-                                    time_slot = "12PM-3PM"
-                                elif hour < 3:
-                                    time_slot = "12PM-3PM"
-                                elif hour < 6:
-                                    time_slot = "3PM-6PM"
-                                elif hour < 9:
-                                    time_slot = "6PM-9PM"
-                                else:
-                                    time_slot = "9PM+"
-                            else:
-                                time_slot = "TBD"
-                            events_by_date[event_day][time_slot].append(event)
+                            slot = "TBD"
+                            if 'TBD' not in time_str and 'likely' not in time_str.lower():
+                                # Try to extract hour
+                                import re
+                                match = re.search(r'(\d{1,2}):(\d{2})\s*(AM|PM)', time_str, re.IGNORECASE)
+                                if match:
+                                    hour = int(match.group(1))
+                                    ampm = match.group(3).upper()
+                                    if ampm == 'PM' and hour != 12:
+                                        hour += 12
+                                    elif ampm == 'AM' and hour == 12:
+                                        hour = 0
+                                    if 5 <= hour <= 23:
+                                        slot = f"{hour:02d}:00"
+                            events_by_date[event_day][slot].append(event)
             except (ValueError, AttributeError):
                 continue
     # Start table
-    html = '<table class="weekly-calendar-table">'
+    html = '<div class="weekly-calendar-table-wrapper">'
+    html += '<table class="weekly-calendar-table">'
     # Header row
     html += '<tr><th>Time</th>'
     for i in range(7):
@@ -2078,12 +2063,12 @@ def create_calendar_grid(events_data, year, month, week_start):
         html += f'<th>{day_name}<br>{day_number}</th>'
     html += '</tr>'
     # Time slot rows
-    for time_slot, time_label in time_slots:
-        html += f'<tr><th class="time-slot-label">{time_label}</th>'
+    for slot, slot_label in time_slots:
+        html += f'<tr><th class="time-slot-label">{slot_label}</th>'
         for i in range(7):
             current_date = week_start + timedelta(days=i)
             day_number = current_date.day
-            day_events = events_by_date.get(day_number, {}).get(time_slot, [])
+            day_events = events_by_date.get(day_number, {}).get(slot, [])
             if day_events:
                 html += '<td class="day-cell with-events">'
                 for event in day_events:
@@ -2091,7 +2076,7 @@ def create_calendar_grid(events_data, year, month, week_start):
                     link = event.get('link', '')
                     html += f'<div class="grid-event {borough_class}">' \
                             f'<div class="event-name">{event["name"]}</div>' \
-                            f'<div class="event-borough">{event["borough"]}</div>'
+                            f'<div class="event-borough {borough_class}">{event["borough"]}</div>'
                     if link:
                         html += f'<div class="event-link"><a href="{link}" target="_blank">More Info</a></div>'
                     html += '</div>'
@@ -2099,7 +2084,7 @@ def create_calendar_grid(events_data, year, month, week_start):
             else:
                 html += '<td class="day-cell empty"></td>'
         html += '</tr>'
-    html += '</table>'
+    html += '</table></div>'
     return html
 
 def generate_html():
