@@ -1517,6 +1517,157 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
                 font-size: 0.9rem;
             }}
         }}
+        
+        /* Weekly Calendar Grid Layout */
+        .weekly-calendar-grid {{
+            display: grid;
+            grid-template-columns: 150px repeat(7, 1fr);
+            gap: 1px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+            font-size: 0.8rem;
+        }}
+        
+        .calendar-header {{
+            display: contents;
+        }}
+        
+        .time-slot-header {{
+            background: #2c3e50;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }}
+        
+        .date-header {{
+            background: #34495e;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1rem;
+        }}
+        
+        .time-row {{
+            display: contents;
+        }}
+        
+        .time-slot-label {{
+            background: #ecf0f1;
+            color: #2c3e50;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border-right: 1px solid #ddd;
+        }}
+        
+        .day-cell {{
+            background: white;
+            min-height: 80px;
+            padding: 4px;
+            border: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }}
+        
+        .day-cell.empty {{
+            background: #f8f9fa;
+        }}
+        
+        .day-cell.with-events {{
+            background: #f8f9fa;
+        }}
+        
+        .grid-event {{
+            background: white;
+            border-radius: 4px;
+            padding: 4px 6px;
+            border-left: 3px solid #ddd;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2px;
+        }}
+        
+        .grid-event.manhattan {{ border-left-color: #ff6b6b; }}
+        .grid-event.brooklyn {{ border-left-color: #4ecdc4; }}
+        .grid-event.queens {{ border-left-color: #3498db; }}
+        .grid-event.bronx {{ border-left-color: #feca57; }}
+        .grid-event.staten-island {{ border-left-color: #a8e6cf; }}
+        .grid-event.asbury-park {{ border-left-color: #d1ecf1; }}
+        
+        .grid-event .event-name {{
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.7rem;
+            line-height: 1.1;
+            margin-bottom: 2px;
+        }}
+        
+        .grid-event .event-borough {{
+            display: inline-block;
+            padding: 1px 4px;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 2px;
+        }}
+        
+        .grid-event .event-borough.manhattan {{ background: #ff6b6b; color: white; }}
+        .grid-event .event-borough.brooklyn {{ background: #4ecdc4; color: white; }}
+        .grid-event .event-borough.queens {{ background: #3498db; color: white; }}
+        .grid-event .event-borough.bronx {{ background: #feca57; color: #333; }}
+        .grid-event .event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
+        .grid-event .event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
+        
+        .grid-event .event-link {{
+            margin-top: 2px;
+        }}
+        
+        .grid-event .event-link a {{
+            display: inline-block;
+            padding: 2px 6px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }}
+        
+        .grid-event .event-link a:hover {{
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }}
+        
+        /* Center navigation */
+        .navigation {{
+            text-align: center;
+        }}
+        
+        .nav-section {{
+            display: inline-block;
+            margin: 0 20px 20px 20px;
+        }}
+        
+        .nav-buttons, .borough-buttons {{
+            justify-content: center;
+        }}
+        
+        /* TBD styling */
+        .time-slot-label:first-child {{
+            font-weight: 700;
+            color: #e74c3c;
+        }}
     </style>
 </head>
 <body>
@@ -1770,51 +1921,102 @@ def parse_time_for_sorting(time_str):
 
 def create_calendar_grid(events_data, year, month):
     """
-    UPDATED VERSION: Sorts events by time within each day.
+    NEW VERSION: Weekly time-based grid layout with dates 1-7 across top and time slots on left.
+    TBD events go in morning slot with bold TBD text.
     """
-    # Group events by date
-    events_by_date = defaultdict(list)
+    # Define time slots
+    time_slots = [
+        ("TBD", "TBD Events"),
+        ("9AM-12PM", "Morning"),
+        ("12PM-3PM", "Afternoon"), 
+        ("3PM-6PM", "Late Afternoon"),
+        ("6PM-9PM", "Evening"),
+        ("9PM+", "Night")
+    ]
+    
+    # Group events by date and time
+    events_by_date = defaultdict(lambda: defaultdict(list))
     
     for event in events_data:
         event_date = event.get('date')
         if event_date:
             try:
-                # Parse the date (adjust based on your date format)
+                # Parse the date
                 if isinstance(event_date, str):
-                    # Assuming format like '2025-07-15' or similar
                     date_parts = event_date.split('-')
                     if len(date_parts) == 3:
                         event_year, event_month, event_day = map(int, date_parts)
                         if event_year == year and event_month == month:
-                            events_by_date[event_day].append(event)
+                            # Determine time slot
+                            time_str = event.get('time', 'TBD')
+                            if 'TBD' in time_str or 'likely' in time_str.lower():
+                                time_slot = "TBD"
+                            elif 'AM' in time_str:
+                                hour = int(time_str.split(':')[0])
+                                if hour < 9:
+                                    time_slot = "TBD"
+                                elif hour < 12:
+                                    time_slot = "9AM-12PM"
+                                else:
+                                    time_slot = "12PM-3PM"
+                            elif 'PM' in time_str:
+                                hour = int(time_str.split(':')[0])
+                                if hour == 12:
+                                    time_slot = "12PM-3PM"
+                                elif hour < 3:
+                                    time_slot = "12PM-3PM"
+                                elif hour < 6:
+                                    time_slot = "3PM-6PM"
+                                elif hour < 9:
+                                    time_slot = "6PM-9PM"
+                                else:
+                                    time_slot = "9PM+"
+                            else:
+                                time_slot = "TBD"
+                            
+                            events_by_date[event_day][time_slot].append(event)
             except (ValueError, AttributeError):
                 continue
     
-    # FIXED: Sort events within each day by time
-    for day, day_events in events_by_date.items():
-        day_events.sort(key=lambda e: parse_time_for_sorting(e.get('time', '')))
+    # Generate the weekly grid HTML
+    calendar_html = '<div class="weekly-calendar-grid">'
     
-    # Example of how the day rendering would work:
-    calendar_html = ""
-    cal = calendar.Calendar(firstweekday=6)  # Start with Sunday
-    month_days = cal.monthdayscalendar(year, month)
+    # Header row with dates
+    calendar_html += '<div class="calendar-header">'
+    calendar_html += '<div class="time-slot-header">Time</div>'
+    for day in range(1, 8):
+        calendar_html += f'<div class="date-header">{day}</div>'
+    calendar_html += '</div>'
     
-    for week in month_days:
-        for day in week:
-            if day == 0:
-                calendar_html += '<div class="calendar-day empty"></div>'
-            else:
-                # Get sorted events for this day
-                day_events = events_by_date.get(day, [])
-                
-                calendar_html += f'<div class="calendar-day">'
-                calendar_html += f'<div class="day-number">{day}</div>'
-                
-                # Add sorted events
-                for event in day_events:  # These are now sorted by time!
-                    calendar_html += generate_event_card(event)
-                
+    # Time slot rows
+    for time_slot, time_label in time_slots:
+        calendar_html += '<div class="time-row">'
+        calendar_html += f'<div class="time-slot-label">{time_label}</div>'
+        
+        for day in range(1, 8):
+            day_events = events_by_date.get(day, {}).get(time_slot, [])
+            
+            if day_events:
+                calendar_html += '<div class="day-cell with-events">'
+                for event in day_events:
+                    borough_class = get_borough_class(event['borough'])
+                    link = event.get('link', '')
+                    
+                    calendar_html += f'<div class="grid-event {borough_class}">'
+                    calendar_html += f'<div class="event-name">{event["name"]}</div>'
+                    calendar_html += f'<div class="event-borough">{event["borough"]}</div>'
+                    
+                    if link:
+                        calendar_html += f'<div class="event-link"><a href="{link}" target="_blank">More Info</a></div>'
+                    
+                    calendar_html += '</div>'
                 calendar_html += '</div>'
+            else:
+                calendar_html += '<div class="day-cell empty"></div>'
+        
+        calendar_html += '</div>'
+    
+    calendar_html += '</div>'
     
     return calendar_html
 
