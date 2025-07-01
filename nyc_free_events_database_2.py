@@ -938,11 +938,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
 
     # Group events by week
     events_by_week = {}
-
+    
     # Start from the Monday of the week containing July 1st
     start_july = date(2025, 7, 1)
     end_july = date(2025, 7, 31)
-    
+
     # Find the Monday of the week containing July 1st
     days_since_monday = start_july.weekday()  # 0=Monday, 1=Tuesday, etc.
     week_start_date = start_july - timedelta(days=days_since_monday)  # This gives us Monday June 30th
@@ -1089,14 +1089,14 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             borough_sections += '</div></div>'
 
     # Generate the HTML content
-    html_content = f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NYC Free Events Calendar - July 2025</title>
-    <style>
+            <style>
         * {{
             margin: 0;
             padding: 0;
@@ -1393,7 +1393,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             margin-top: 20px;
         }}
         
-        .event-card {{
+                .event-card {{
             background: white;
             border-radius: 15px;
             padding: 25px;
@@ -1404,7 +1404,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             overflow: hidden;
         }}
         
-        .event-card:hover {{
+                .event-card:hover {{
             transform: translateY(-5px);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
         }}
@@ -1428,7 +1428,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             margin-bottom: 15px;
         }}
         
-        .event-detail {{
+                .event-detail {{
             display: flex;
             align-items: center;
             margin-bottom: 8px;
@@ -1474,7 +1474,7 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         .event-borough.staten-island {{ background: #a8e6cf; color: #333; }}
         .event-borough.asbury-park {{ background: #d1ecf1; color: #333; }}
         
-        .event-link {{
+                .event-link {{
             display: inline-block;
             margin-top: 15px;
             padding: 10px 20px;
@@ -1702,60 +1702,61 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
         }}
         
         /* Weekly Calendar Table Layout */
-        .weekly-calendar-table {
+        .weekly-calendar-table {{
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
             background: #f8f9fa;
             font-size: 0.9rem;
-        }
-        .weekly-calendar-table th, .weekly-calendar-table td {
+            min-width: 900px;
+        }}
+        .weekly-calendar-table th, .weekly-calendar-table td {{
             border: 1px solid #e0e0e0;
             padding: 6px 4px;
             text-align: left;
             vertical-align: top;
-        }
-        .weekly-calendar-table th {
+        }}
+        .weekly-calendar-table th {{
             background: #34495e;
             color: #fff;
             font-weight: 600;
             text-align: center;
-        }
-        .weekly-calendar-table .time-slot-label {
+        }}
+        .weekly-calendar-table .time-slot-label {{
             background: #ecf0f1;
             color: #2c3e50;
             font-weight: 700;
             width: 120px;
             text-align: right;
-        }
-        .weekly-calendar-table td.day-cell.empty {
+        }}
+        .weekly-calendar-table td.day-cell.empty {{
             background: #f8f9fa;
-        }
-        .weekly-calendar-table td.day-cell.with-events {
+        }}
+        .weekly-calendar-table td.day-cell.with-events {{
             background: #fff;
-        }
-        .grid-event {
+        }}
+        .grid-event {{
             background: white;
             border-radius: 4px;
             padding: 4px 6px;
             border-left: 3px solid #ddd;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
             margin-bottom: 2px;
-        }
-        .grid-event.manhattan { border-left-color: #ff6b6b; }
-        .grid-event.brooklyn { border-left-color: #4ecdc4; }
-        .grid-event.queens { border-left-color: #3498db; }
-        .grid-event.bronx { border-left-color: #feca57; }
-        .grid-event.staten-island { border-left-color: #a8e6cf; }
-        .grid-event.asbury-park { border-left-color: #d1ecf1; }
-        .grid-event .event-name {
+        }}
+        .grid-event.manhattan {{ border-left-color: #ff6b6b; }}
+        .grid-event.brooklyn {{ border-left-color: #4ecdc4; }}
+        .grid-event.queens {{ border-left-color: #3498db; }}
+        .grid-event.bronx {{ border-left-color: #feca57; }}
+        .grid-event.staten-island {{ border-left-color: #a8e6cf; }}
+        .grid-event.asbury-park {{ border-left-color: #d1ecf1; }}
+        .grid-event .event-name {{
             font-weight: 600;
             color: #2c3e50;
             font-size: 0.8rem;
             line-height: 1.1;
             margin-bottom: 2px;
-        }
-        .grid-event .event-borough {
+        }}
+        .grid-event .event-borough {{
             display: inline-block;
             padding: 1px 4px;
             border-radius: 6px;
@@ -1764,11 +1765,11 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             text-transform: uppercase;
             letter-spacing: 0.3px;
             margin-bottom: 2px;
-        }
-        .grid-event .event-link {
+        }}
+        .grid-event .event-link {{
             margin-top: 2px;
-        }
-        .grid-event .event-link a {
+        }}
+        .grid-event .event-link a {{
             display: inline-block;
             padding: 2px 6px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1778,28 +1779,251 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             font-size: 0.7rem;
             font-weight: 600;
             transition: all 0.2s ease;
-        }
-        .grid-event .event-link a:hover {
+        }}
+        .grid-event .event-link a:hover {{
             transform: translateY(-1px);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        /* Remove old .weekly-calendar-grid styles if present */
+        }}
+        
         /* Responsive scroll for table */
-        .weekly-calendar-table-wrapper {
+        .weekly-calendar-table-wrapper {{
             width: 100%;
             overflow-x: auto;
-        }
-        .weekly-calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: #f8f9fa;
-            font-size: 0.9rem;
-            min-width: 900px;
-        }
-        /* ...rest of .weekly-calendar-table CSS as before... */
-    </style>
-</head>
+        }}
+        
+        /* Enhanced Mobile Responsiveness */
+        @media (max-width: 768px) {{
+            .container {{
+                padding: 10px;
+                margin: 0;
+            }}
+            
+            .header {{
+                padding: 20px 15px;
+            }}
+            
+            .header h1 {{
+                font-size: 1.8rem;
+            }}
+            
+            .header p {{
+                font-size: 1rem;
+            }}
+            
+            .nav-section {{
+                padding: 15px;
+                margin-bottom: 15px;
+            }}
+            
+            .nav-section h3 {{
+                font-size: 1.1rem;
+                margin-bottom: 10px;
+            }}
+            
+            .week-nav, .borough-nav {{
+                flex-direction: column;
+                gap: 8px;
+            }}
+            
+            .nav-button, .borough-button {{
+                min-width: auto;
+                padding: 12px 20px;
+                font-size: 0.9rem;
+                width: 100%;
+                max-width: 300px;
+                margin: 0 auto;
+            }}
+            
+            .view-toggle {{
+                margin-bottom: 15px;
+            }}
+            
+            .toggle-button {{
+                padding: 12px 20px;
+                margin: 0 5px;
+                font-size: 0.9rem;
+            }}
+            
+            .content-section {{
+                padding: 20px 15px;
+            }}
+            
+            .week-header {{
+                padding: 15px;
+                margin-bottom: 20px;
+            }}
+            
+            .week-header h2 {{
+                font-size: 1.5rem;
+            }}
+            
+            .week-header p {{
+                font-size: 1rem;
+            }}
+            
+            .events-grid {{
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }}
+            
+            .event-card {{
+                padding: 20px;
+            }}
+            
+            .event-header {{
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }}
+            
+            .event-title {{
+                font-size: 1.2rem;
+            }}
+            
+            .event-date {{
+                font-size: 0.9rem;
+                padding: 6px 12px;
+            }}
+            
+            .event-details {{
+                margin-bottom: 12px;
+            }}
+            
+            .event-detail {{
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }}
+            
+            .event-detail i {{
+                width: 16px;
+                margin-right: 8px;
+            }}
+            
+            .event-description {{
+                font-size: 0.9rem;
+                margin-bottom: 12px;
+            }}
+            
+            .event-borough {{
+                font-size: 0.75rem;
+                padding: 4px 10px;
+                margin-top: 8px;
+            }}
+            
+            .event-link {{
+                margin-top: 12px;
+            }}
+            
+            .event-link a {{
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                width: 100%;
+                text-align: center;
+                display: block;
+            }}
+            
+            .weekly-calendar-table-wrapper {{
+                margin: 0 -15px 15px -15px;
+                padding: 0 15px;
+                box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.1);
+            }}
+            
+            .weekly-calendar-table {{
+                min-width: 600px;
+                font-size: 0.7rem;
+            }}
+        }}
+        
+        @media (max-width: 480px) {{
+            .container {{
+                padding: 5px;
+            }}
+            
+            .header {{
+                padding: 15px 10px;
+            }}
+            
+            .header h1 {{
+                font-size: 1.5rem;
+            }}
+            
+            .header p {{
+                font-size: 0.9rem;
+            }}
+            
+            .nav-section {{
+                padding: 10px;
+            }}
+            
+            .nav-section h3 {{
+                font-size: 1rem;
+            }}
+            
+            .nav-button, .borough-button {{
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }}
+            
+            .toggle-button {{
+                padding: 10px 15px;
+                font-size: 0.8rem;
+                margin: 0 2px;
+            }}
+            
+            .content-section {{
+                padding: 15px 10px;
+            }}
+            
+            .week-header {{
+                padding: 12px;
+            }}
+            
+            .week-header h2 {{
+                font-size: 1.3rem;
+            }}
+            
+            .week-header p {{
+                font-size: 0.9rem;
+            }}
+            
+            .event-card {{
+                padding: 15px;
+            }}
+            
+            .event-title {{
+                font-size: 1.1rem;
+            }}
+            
+            .event-date {{
+                font-size: 0.8rem;
+                padding: 5px 10px;
+            }}
+            
+            .event-detail {{
+                font-size: 0.85rem;
+            }}
+            
+            .event-description {{
+                font-size: 0.85rem;
+            }}
+            
+            .event-borough {{
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }}
+            
+            .event-link a {{
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }}
+            
+            .weekly-calendar-table {{
+                min-width: 400px;
+                font-size: 0.6rem;
+            }}
+        }}
+            </style>
+        </head>
 <body>
     <div class="container">
         <div class="header">
@@ -1812,8 +2036,8 @@ def generate_weekly_events_html(events_data, output_filename="nyc_events_calenda
             <div class="week-nav">
                 {week_navigation}
             </div>
-        </div>
-        
+                </div>
+
         <div class="nav-section">
             <h3>🗺️ Browse by Destination</h3>
             <div class="borough-nav">
@@ -1965,6 +2189,7 @@ def generate_event_card(event):
     Generate event card with borough color coding and More Info links.
     """
     name = event.get('name', 'Untitled Event')
+    date_str = event.get('date', 'Date TBD')
     time_str = event.get('time', 'Time TBD')
     address = event.get('address', 'Location TBD')
     borough = event.get('borough', 'NYC')
@@ -1972,6 +2197,9 @@ def generate_event_card(event):
     
     # Get borough class for color coding
     borough_class = get_borough_class(borough)
+    
+    # Format date for display
+    formatted_date = format_date(date_str)
     
     # Create description without duplicate address
     description = f"Free event in {borough}"
@@ -1984,10 +2212,22 @@ def generate_event_card(event):
     # Generate the event card HTML with borough class and link
     card_html = f'''
     <div class="event-card {borough_class}" data-borough="{borough.lower()}">
-        <div class="event-time">{time_str}</div>
-        <div class="event-name">{name}</div>
-        <div class="event-location">{address}</div>
+        <div class="event-header">
+            <div class="event-title">{name}</div>
+            <div class="event-date">{formatted_date}</div>
+        </div>
+        <div class="event-details">
+            <div class="event-detail">
+                <i>🕒</i>
+                <span class="event-time">{time_str}</span>
+            </div>
+            <div class="event-detail">
+                <i>📍</i>
+                <span class="event-address">{address}</span>
+            </div>
+        </div>
         <div class="event-description">{description}</div>
+        <div class="event-borough {borough_class}">{borough}</div>
     '''
     
     # Add link if available
@@ -2707,10 +2947,10 @@ def generate_html():
                     </div>
                 </div>
         """
-    
-    html_content += """
+            
+        html_content += """
+                </div>
             </div>
-        </div>
         
         <script>
             function showWeek(weekIndex) {
@@ -2794,10 +3034,10 @@ def generate_html():
                 alert('Feature coming soon! You can currently download all events using the main download button.');
             }
         </script>
-    </body>
-    </html>
-    """
-    
+        </body>
+        </html>
+        """
+
     return html_content
 
 def generate_ical_content(events):
