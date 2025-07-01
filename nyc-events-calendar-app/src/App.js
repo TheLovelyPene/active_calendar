@@ -30,7 +30,7 @@ const nycEvents = [
   {
     name: "New York Guitar Festival: Pedro Cortes Flamenco, Big Lazy, Marel Hidalgo",
     date: "2025-07-03",
-    time: "7:00 PM",
+      time: "7:00 PM",
     address: "Bryant Park Stage, Manhattan",
     borough: "Manhattan",
     link: "https://bryantpark.org/activities/picnic-performances"
@@ -46,7 +46,7 @@ const nycEvents = [
   {
     name: "Macy's 4th of July Fireworks",
     date: "2025-07-04",
-    time: "8:00 PM",
+      time: "8:00 PM",
     address: "East River (viewable from Manhattan, Brooklyn, and Queens waterfronts)",
     borough: "Manhattan",
     link: "https://www.timeout.com/newyork/events-calendar/july-events-calendar"
@@ -519,7 +519,7 @@ const nycEvents = [
   },
   {
     name: "Summer on the Hudson: Movies Under the Stars",
-    date: "2025-07-05",
+      date: "2025-07-05",
     time: "8:00 PM - 10:00 PM",
     address: "Riverside Park, 91st Street, New York, NY 10024",
     borough: "Manhattan",
@@ -648,7 +648,7 @@ const nycEvents = [
   {
     name: "Governors Island Art Fair",
     date: "2025-07-12",
-    time: "11:00 AM - 6:00 PM",
+      time: "11:00 AM - 6:00 PM",
     address: "Governors Island, 10 South St, New York, NY 10004",
     borough: "Manhattan",
     link: "https://www.nycgovparks.org/events"
@@ -715,7 +715,7 @@ const nycEvents = [
   // Queens NYC Parks Events
   {
     name: "Queens County Farm Hayrides",
-    date: "2025-07-06",
+      date: "2025-07-06",
     time: "1:00 PM - 4:00 PM",
     address: "Queens County Farm Museum, 73-50 Little Neck Pkwy, Floral Park, NY 11004",
     borough: "Queens",
@@ -799,7 +799,7 @@ const nycEvents = [
   },
   {
     name: "Conference House Park Cultural Festival",
-    date: "2025-07-12",
+      date: "2025-07-12",
     time: "1:00 PM - 5:00 PM",
     address: "Conference House Park, 298 Satterlee St, Staten Island, NY 10307",
     borough: "Staten Island",
@@ -872,7 +872,7 @@ function App() {
     });
   };
 
-  return (
+    return (
     <div className="App">
       <header className="App-header">
         <h1>NYC Free Events Calendar - July 2025</h1>
@@ -896,13 +896,13 @@ function App() {
             day: 'numeric', 
             year: 'numeric' 
           })}</h2>
-        </div>
-        
+      </div>
+
         <div className="events-grid">
           {weeks[currentWeek]?.events.length > 0 ? (
             weeks[currentWeek].events.map((event, index) => (
               <div 
-                key={index} 
+                key={index}
                 className="event-card"
                 style={{ borderLeft: `4px solid ${getBoroughColor(event.borough)}` }}
               >
