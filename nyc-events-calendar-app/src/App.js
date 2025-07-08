@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './App.css';
+import EventsFromFirestore from './components/EventsFromFirestore';
 
 // NYC Free Events Database
 const nycEvents = [
@@ -824,103 +825,9 @@ const nycEvents = [
 ];
 
 function App() {
-  const [currentWeek, setCurrentWeek] = useState(0);
-  
-  // Group events by week
-  const weeks = [];
-  const weekStarts = [
-    new Date('2025-06-30'),
-    new Date('2025-07-07'),
-    new Date('2025-07-14'),
-    new Date('2025-07-21'),
-    new Date('2025-07-28')
-  ];
-  
-  weekStarts.forEach((weekStart, index) => {
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-    
-    const weekEvents = nycEvents.filter(event => {
-      const eventDate = new Date(event.date);
-      return eventDate >= weekStart && eventDate <= weekEnd;
-    });
-    
-    weeks.push({
-      start: weekStart,
-      end: weekEnd,
-      events: weekEvents
-    });
-  });
-
-  const getBoroughColor = (borough) => {
-    const colors = {
-      'Manhattan': '#ff6b6b',
-      'Brooklyn': '#4ecdc4',
-      'Queens': '#45b7d1',
-      'Bronx': '#96ceb4',
-      'Staten Island': '#feca57'
-    };
-    return colors[borough] || '#ddd';
-  };
-
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
-
-    return (
+  return (
     <div className="App">
-      <header className="App-header">
-        <h1>NYC Free Events Calendar - July 2025</h1>
-        <div className="week-navigation">
-          {weeks.map((week, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentWeek(index)}
-              className={currentWeek === index ? 'active' : ''}
-            >
-              Week of {week.start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-            </button>
-          ))}
-        </div>
-      </header>
-      
-      <main className="calendar-content">
-        <div className="week-header">
-          <h2>Week of {weeks[currentWeek]?.start.toLocaleDateString('en-US', { 
-            month: 'long', 
-            day: 'numeric', 
-            year: 'numeric' 
-          })}</h2>
-      </div>
-
-        <div className="events-grid">
-          {weeks[currentWeek]?.events.length > 0 ? (
-            weeks[currentWeek].events.map((event, index) => (
-              <div 
-                key={index}
-                className="event-card"
-                style={{ borderLeft: `4px solid ${getBoroughColor(event.borough)}` }}
-              >
-                <h3>{event.name}</h3>
-                <p className="event-date">{formatDate(event.date)}</p>
-                <p className="event-time">{event.time}</p>
-                <p className="event-address">{event.address}</p>
-                <p className="event-borough">{event.borough}</p>
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="event-link">
-                  More Info
-                </a>
-              </div>
-            ))
-          ) : (
-            <p className="no-events">No events scheduled for this week</p>
-          )}
-        </div>
-      </main>
+      <EventsFromFirestore />
     </div>
   );
 }
