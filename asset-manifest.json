@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/nyc-events-calendar-app/static/css/main.db6f4243.css",
-    "main.js": "/nyc-events-calendar-app/static/js/main.7adb322f.js",
+    "main.js": "/nyc-events-calendar-app/static/js/main.71b4cecb.js",
     "static/js/453.5e2742ac.chunk.js": "/nyc-events-calendar-app/static/js/453.5e2742ac.chunk.js",
     "index.html": "/nyc-events-calendar-app/index.html",
     "main.db6f4243.css.map": "/nyc-events-calendar-app/static/css/main.db6f4243.css.map",
-    "main.7adb322f.js.map": "/nyc-events-calendar-app/static/js/main.7adb322f.js.map",
+    "main.71b4cecb.js.map": "/nyc-events-calendar-app/static/js/main.71b4cecb.js.map",
     "453.5e2742ac.chunk.js.map": "/nyc-events-calendar-app/static/js/453.5e2742ac.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.db6f4243.css",
-    "static/js/main.7adb322f.js"
+    "static/js/main.71b4cecb.js"
   ]
 }
