@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import EventsFromFirestore from './components/EventsFromFirestore';
 import WeekViewCalendar from './components/WeekViewCalendar';
+import MonthViewCalendar from './components/MonthViewCalendar';
 
 // NYC Free Events Database
 const nycEvents = [
@@ -1106,7 +1107,7 @@ const nycEvents = [
 ];
 
 function App() {
-  return <WeekViewCalendar />;
+  return <MonthViewCalendar />;
 }
 
 export default App;
