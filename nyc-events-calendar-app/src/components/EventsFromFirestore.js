@@ -18,7 +18,7 @@ const EventsFromFirestore = () => {
       let eventsData;
       
       if (selectedBorough === 'all') {
-        eventsData = await eventService.getFreeEvents();
+        eventsData = await eventService.getAllEvents();
       } else {
         eventsData = await eventService.getEventsByBorough(selectedBorough);
       }

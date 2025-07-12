@@ -2,50 +2,60 @@ import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from event_automation.firestore_utils import save_events_to_firestore
+from datetime import datetime
 
-NYCFORFREE_URL = "https://www.nycforfree.co/events"
+BASE_URL = "https://www.nycforfree.co/events/"
+
+# Helper to get all months from now to December
+from calendar import month_name
+
+def get_month_urls():
+    now = datetime.now()
+    year = now.year
+    month_urls = []
+    for m in range(now.month, 13):
+        month_str = month_name[m].lower()
+        url = f"{BASE_URL}{month_str}-{year}"
+        month_urls.append(url)
+    return month_urls
 
 def scrape_nycforfree_events():
     """
-    Scrape free NYC events from nycforfree.co and return a list of event dicts:
+    Scrape free NYC events from nycforfree.co for the rest of the year and return a list of event dicts:
     [{ 'name': ..., 'date': ..., 'location': ..., 'link': ... }, ...]
     """
     events = []
     headers = {'User-Agent': 'Mozilla/5.0'}
-    response = requests.get(NYCFORFREE_URL, headers=headers)
-    print(response.status_code)
-    print(response.text[:500])
-    if response.status_code != 200:
-        print(f"Failed to fetch NYC for FREE page: {response.status_code}")
-        return events
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    # Find event blocks (structure may change, so this is a best guess)
-    for event_block in soup.find_all('section'):
-        if not isinstance(event_block, Tag):
+    month_urls = get_month_urls()
+    for url in month_urls:
+        response = requests.get(url, headers=headers)
+        print(f"Fetching {url} - Status: {response.status_code}")
+        if response.status_code != 200:
+            print(f"Failed to fetch {url}: {response.status_code}")
             continue
-        # Try to find event name
-        name_tag = event_block.find('h2') if isinstance(event_block, Tag) else None
-        if not name_tag:
-            name_tag = event_block.find('h3') if isinstance(event_block, Tag) else None
-        name = name_tag.text.strip() if name_tag and hasattr(name_tag, 'text') else None
-        # Try to find date
-        date_tag = event_block.find('p') if isinstance(event_block, Tag) else None
-        date = date_tag.text.strip() if date_tag and hasattr(date_tag, 'text') else None
-        # Try to find location
-        location = None
-        # Try to find link
-        link_tag = event_block.find('a') if isinstance(event_block, Tag) else None
-        link = link_tag.get('href') if isinstance(link_tag, Tag) else None
-        if isinstance(link, str) and not link.startswith('http'):
-            link = 'https://www.nycforfree.co' + link
-        if name and date:
-            events.append({
-                'name': name,
-                'date': date,
-                'location': location,
-                'link': link
-            })
+        soup = BeautifulSoup(response.text, 'html.parser')
+        # Try to find event blocks (update selector as needed)
+        for event_block in soup.find_all('section'):
+            if not isinstance(event_block, Tag):
+                continue
+            name_tag = event_block.find('h2') if isinstance(event_block, Tag) else None
+            if not name_tag:
+                name_tag = event_block.find('h3') if isinstance(event_block, Tag) else None
+            name = name_tag.text.strip() if name_tag and hasattr(name_tag, 'text') else None
+            date_tag = event_block.find('p') if isinstance(event_block, Tag) else None
+            date = date_tag.text.strip() if date_tag and hasattr(date_tag, 'text') else None
+            location = None
+            link_tag = event_block.find('a') if isinstance(event_block, Tag) else None
+            link = link_tag.get('href') if isinstance(link_tag, Tag) else None
+            if isinstance(link, str) and not link.startswith('http'):
+                link = 'https://www.nycforfree.co' + link
+            if name and date:
+                events.append({
+                    'name': name,
+                    'date': date,
+                    'location': location,
+                    'link': link
+                })
     return events
 
 if __name__ == "__main__":
